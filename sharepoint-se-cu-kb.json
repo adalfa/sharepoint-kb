@@ -1,0 +1,261 @@
+{
+  "generated": "2026-04-18",
+  "product": "SharePoint Server Subscription Edition",
+  "coverage": {
+    "start": "2026-01",
+    "end": "2026-04"
+  },
+  "current_recommendation": {
+    "cu": "2026-04",
+    "build": "16.0.19725.20210",
+    "kb": "KB5002853",
+    "reason": "Contains the complete fix for the Mar 2026 CU SAFE_NOTIFICATION_DATA psconfig upgrade regression (I-01); no outstanding caution banner; April security rollup."
+  },
+  "cus": [
+    {
+      "id": "2026-04",
+      "release_date": "2026-04-14",
+      "build": "16.0.19725.20210",
+      "kb": ["KB5002853"],
+      "download_id": "108607",
+      "stefan_verdict": "strongly_recommended",
+      "security_update": true,
+      "features": [],
+      "fixes": [
+        "Complete fix for I-01 (SAFE_NOTIFICATION_DATA psconfig failure when upgrading from Jan 2026 CU schema)."
+      ],
+      "security_fixes": [
+        {"cve": "CVE-2026-32201", "summary": "Listed in CISA Known Exploited Vulnerabilities catalog — actively exploited. Accelerate patching."}
+      ],
+      "known_issues": [
+        {
+          "id": "I-03",
+          "component": "Search / psconfig",
+          "severity": "high",
+          "status": "unconfirmed",
+          "summary": "Configuration Wizard fails upgrading SearchAdminDatabase with 'Cannot find the object proc_MSS_GetCrawlErrorOrWarningCounts'. Single community report on Stefan's Apr CU post comments; no Stefan response yet.",
+          "introduced_in": "2026-04",
+          "fixed_in": null,
+          "workaround": "Snapshot Search Admin DB before install. If hit: open Microsoft Support ticket; do not self-repair schema.",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"
+          ]
+        }
+      ],
+      "prerequisites": [
+        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002853",
+        "https://www.microsoft.com/en-us/download/details.aspx?id=108607"
+      ]
+    },
+    {
+      "id": "2026-03",
+      "release_date": "2026-03-10",
+      "build": "16.0.19127.20xxx",
+      "build_note": "not captured in fetched preview; see KB5002843",
+      "kb": ["KB5002843"],
+      "download_id": "108570",
+      "stefan_verdict": "caution",
+      "security_update": true,
+      "features": [],
+      "fixes": [
+        "SPAdminV4 failure on Windows Server 2025 (Sep 2025 CU regression).",
+        "Secure Store group-claim validation after Sep 2025 CU."
+      ],
+      "known_issues": [
+        {
+          "id": "I-01",
+          "component": "Upgrade / psconfig",
+          "severity": "critical",
+          "summary": "Configuration Wizard fails with 'Invalid column name SAFE_NOTIFICATION_DATA' when Mar 2026 CU installer upgrades a Jan 2026 CU schema.",
+          "introduced_in": "2026-03",
+          "fixed_in": "2026-04",
+          "workaround": "Before install: install Feb 2026 CU and run Configuration Wizard, then install Mar 2026 CU. If already broken: open Microsoft Support ticket; engineering-guided remediation only.",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/"
+          ]
+        }
+      ],
+      "prerequisites": [
+        "Do NOT install directly on top of Jan 2026 CU schema — install Feb 2026 CU as intermediate first.",
+        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2026/03/10/march-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/",
+        "https://support.microsoft.com/en-us/kb/5002843"
+      ]
+    },
+    {
+      "id": "2026-02",
+      "release_date": "2026-02-10",
+      "build": "16.0.19127.20518",
+      "kb": ["KB5002833"],
+      "download_id": "108554",
+      "stefan_verdict": "must_install_or_higher",
+      "security_update": true,
+      "features": [],
+      "fixes": [
+        "w3wp crash 0xC0000409 in owssvr.dll (Sep 2025 CU regression).",
+        "w3wp crash 0xC06D007E / 0xE0434352 race (Sep 2025 CU regression).",
+        "SP2010 workflow CSC.EXE failure (Sep 2025 CU regression)."
+      ],
+      "known_issues": [],
+      "carries_forward": ["I-02"],
+      "prerequisites": [
+        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2026/02/10/february-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002833"
+      ]
+    },
+    {
+      "id": "2026-01",
+      "release_date": "2026-01-13",
+      "build": "16.0.19127.20442",
+      "kb": ["KB5002822"],
+      "download_id": "108517",
+      "stefan_verdict": "caution",
+      "security_update": true,
+      "features": [],
+      "fixes": [],
+      "known_issues": [
+        {
+          "id": "I-02",
+          "component": "Modern UI / Text web part",
+          "severity": "medium",
+          "summary": "Text web part content area becomes read-only while the 'Text and table formatting' pane is open.",
+          "introduced_in": "2026-01",
+          "fixed_in": null,
+          "workaround": "Close the formatting pane before editing text.",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2026/01/13/january-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"
+          ]
+        }
+      ],
+      "regression_trap": "Jan 2026 CU schema is incompatible with Mar 2026 CU installer (I-01). Do not jump Jan → Mar directly; install Feb 2026 CU first, or skip straight to Apr 2026 CU.",
+      "prerequisites": [
+        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2026/01/13/january-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002822"
+      ]
+    }
+  ],
+  "issue_index": [
+    {
+      "id": "I-01",
+      "component": "Upgrade / psconfig",
+      "summary": "Invalid column name 'SAFE_NOTIFICATION_DATA' when Mar 2026 CU installer tries to upgrade a Jan 2026 CU schema.",
+      "severity": "critical",
+      "introduced_in": "2026-03",
+      "fixed_in": "2026-04",
+      "workaround": "Install Feb 2026 CU and run Config Wizard before Mar, or jump straight to Apr 2026 CU."
+    },
+    {
+      "id": "I-02",
+      "component": "Modern UI / Text web part",
+      "summary": "Text web part read-only while 'Text and table formatting' pane is open.",
+      "severity": "medium",
+      "introduced_in": "2026-01",
+      "fixed_in": null,
+      "workaround": "Close formatting pane before editing text."
+    },
+    {
+      "id": "I-03",
+      "component": "Search / psconfig",
+      "summary": "Apr 2026 CU Configuration Wizard fails upgrading SearchAdminDatabase with missing proc_MSS_GetCrawlErrorOrWarningCounts.",
+      "severity": "high",
+      "status": "unconfirmed",
+      "introduced_in": "2026-04",
+      "fixed_in": null,
+      "workaround": "Snapshot SearchAdminDatabase before install; open MS Support ticket if hit."
+    },
+    {
+      "id": "X-01",
+      "component": "Patching / permissions",
+      "summary": "Future SharePoint fixes fail to install because NT Authority\\system is a member of WSS_WPG / IIS_IUSRS.",
+      "severity": "high",
+      "introduced_in": "2025-09",
+      "fixed_in": "2025-10 (code fix; existing farms must still remediate)",
+      "workaround": "Run Fix-SeptemberCU-Permission-Problem.ps1 before installing any CU in this window.",
+      "scope": "carryover from outside window"
+    }
+  ],
+  "upgrade_matrix": [
+    {
+      "from": "pre-2026-01",
+      "to": "2026-04",
+      "intermediate_required": false,
+      "intermediate_stops": [],
+      "rationale": "Clean jump. If farm was ever on Sep 2025 CU, run Fix-SeptemberCU-Permission-Problem.ps1 first.",
+      "blockers": []
+    },
+    {
+      "from": "2026-01",
+      "to": "2026-04",
+      "intermediate_required": true,
+      "intermediate_stops": ["2026-02"],
+      "rationale": "Jan 2026 CU schema triggers I-01 with any later installer that lacks the fix. Feb 2026 CU is the mandatory intermediate; run Config Wizard after Feb, then install Apr. (Alt: Jan → Apr direct also works because Apr contains the complete I-01 fix — verify with Microsoft before choosing.)",
+      "blockers": ["I-01"]
+    },
+    {
+      "from": "2026-02",
+      "to": "2026-04",
+      "intermediate_required": false,
+      "intermediate_stops": [],
+      "rationale": "Feb schema is compatible with Apr's installer.",
+      "blockers": []
+    },
+    {
+      "from": "2026-03",
+      "to": "2026-04",
+      "intermediate_required": false,
+      "intermediate_stops": [],
+      "rationale": "Mar schema is compatible with Apr's installer (Mar must have been installed cleanly from Feb, not Jan).",
+      "blockers": []
+    },
+    {
+      "from": "2026-03-broken",
+      "to": "2026-04",
+      "intermediate_required": false,
+      "intermediate_stops": [],
+      "rationale": "Mar installed on top of Jan with failing psconfig: open Microsoft Support ticket. Engineering-guided remediation only; do not self-repair schema.",
+      "blockers": ["I-01 (already manifested)"]
+    },
+    {
+      "from": "2026-04",
+      "to": "2026-04",
+      "intermediate_required": false,
+      "intermediate_stops": [],
+      "rationale": "Already on target.",
+      "blockers": []
+    }
+  ],
+  "patching_procedure": [
+    "Read target CU's Stefan post for last-minute blockers.",
+    "Back up content + config DBs.",
+    "Install binaries on all SharePoint machines.",
+    "Run SharePoint Products Configuration Wizard (PSConfigUI.exe).",
+    "Run Test-DefenderAndAmsiWorkProperly (available since Sep 2025 CU).",
+    "Verify machine-key rotation timer job health (since Sep 2025 CU)."
+  ],
+  "external_references": {
+    "product_servicing_policy": "https://learn.microsoft.com/en-us/sharepoint/product-servicing-policy/updated-product-servicing-policy-for-sharepoint-server-se",
+    "servicing_faq": "https://learn.microsoft.com/en-us/sharepoint/product-servicing-policy/faq/faq-subscription-edition",
+    "feature_update_25h1_25h2": "https://learn.microsoft.com/en-us/SharePoint/what-s-new/new-and-improved-features-in-sharepoint-server-subscription-edition-25h1-release",
+    "deprecations": "https://learn.microsoft.com/en-us/sharepoint/what-s-new/what-s-deprecated-or-removed-from-sharepoint-server-subscription-edition"
+  },
+  "source_log": [
+    {"label": "spse-2026-01-cu", "url": "https://blog.stefan-gossner.com/2026/01/13/january-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
+    {"label": "spse-2026-02-cu", "url": "https://blog.stefan-gossner.com/2026/02/10/february-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
+    {"label": "spse-2026-03-cu", "url": "https://blog.stefan-gossner.com/2026/03/10/march-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
+    {"label": "spse-2026-04-cu", "url": "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
+    {"label": "mar2026-psconfig-issue", "url": "https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/"}
+  ]
+}
