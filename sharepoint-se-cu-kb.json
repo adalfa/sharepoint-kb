@@ -302,6 +302,16 @@
             "https://blog.stefan-gossner.com/2025/07/21/important-active-attacks-targeting-on-premises-sharepoint-server-customers/",
             "https://blog.stefan-gossner.com/2025/07/23/clarifying-common-questions-around-amsi-in-sharepoint/"
           ]
+        },
+        {
+          "id": "I-17",
+          "component": "Search / Timer Jobs",
+          "severity": "high",
+          "summary": "QueryLogJobDefinition SQL connection pool exhaustion (introduced Mar 2025 CU, still present in Jul + Aug 2025 CU). Event 6399 critical errors after a few days uptime. Cascading timer job failures when pool max (100) is reached.",
+          "introduced_in": "2025-03",
+          "fixed_in": null,
+          "workaround": "Disable Query Logging Timer Job in Central Admin; restart SPTimerV4 to temporarily clear pool",
+          "source_urls": ["https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2"]
         }
       ],
       "sources": [
@@ -326,7 +336,8 @@
     { "id": "I-13", "component": "Worker process", "summary": "w3wp 0xC0000409 owssvr.dll", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-02" },
     { "id": "I-14", "component": "Worker process", "summary": "w3wp 0xC06D007E/0xE0434352 race", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-02" },
     { "id": "I-15", "component": "Modern UI Text web part", "summary": "Read-only while formatting pane open", "severity": "medium", "introduced_in": "2026-01", "fixed_in": null },
-    { "id": "I-16", "component": "Upgrade schema", "summary": "SAFE_NOTIFICATION_DATA psconfig failure Jan→Mar 2026", "severity": "critical", "introduced_in": "2026-03", "fixed_in": "2026-04" }
+    { "id": "I-16", "component": "Upgrade schema", "summary": "SAFE_NOTIFICATION_DATA psconfig failure Jan→Mar 2026", "severity": "critical", "introduced_in": "2026-03", "fixed_in": "2026-04" },
+    { "id": "I-17", "component": "Search / Timer Jobs", "summary": "QueryLogJobDefinition SQL connection pool exhaustion — timer job leaks SQL connections each run, pool fills up (max 100) after a few days causing cascading timer job failures. Event 6399: 'Timeout expired. The timeout period elapsed prior to obtaining a connection from the pool'. ULS: QueryLogProcessor AssignDocIdsToResults EndExecuteReader error.", "severity": "high", "introduced_in": "2025-03", "fixed_in": null, "workaround": "Disable the Query Logging Timer Job in Central Admin. Restarting SPTimerV4 temporarily clears the pool.", "source_urls": ["https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2"] }
   ],
   "upgrade_matrix": [
     { "from": "<=2025-06", "to": "2026-04", "intermediate_required": false, "rationale": "Skips all Sep 2025 CU regressions; must scan for spinstall0.aspx and rotate keys.", "blockers": [] },

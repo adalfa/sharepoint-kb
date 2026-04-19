@@ -155,6 +155,7 @@ Reasons:
   - Active, in-the-wild attacks targeting on-prem SharePoint (2016/2019/SE) exploiting vulns *partially* addressed by July Security Update. Admin IoC: presence of `spinstall0.aspx` in `…\16\TEMPLATE\LAYOUTS` = machine likely compromised.
   - Customers who were on July 2025 CU only were still vulnerable to follow-on variants — **install at least Aug 2025 CU**, preferably later, for full coverage.
 - **Functional fixes (per Stefan Q&A in comments):** Query Logging Job timeout (actually fixed in June 2025 CU); User Profile Language Synchronization Job failure planned for Aug 2025 CU — so July CU did **not** cover those two as some customers believed.
+- **Known issue carried forward (I-17):** `QueryLogJobDefinition` SQL connection pool exhaustion — introduced Mar 2025 CU, still present in Jul and Aug 2025 CU. Manifests as Event ID 6399 critical errors a few days after server restart. See Section 5 for details and workaround.
 - **Sources:**
   - Main: https://blog.stefan-gossner.com/2025/07/08/july-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/
   - ToolShell advisory: https://blog.stefan-gossner.com/2025/07/21/important-active-attacks-targeting-on-premises-sharepoint-server-customers/
@@ -183,6 +184,7 @@ Reasons:
 | I-14 | Worker process | w3wp crash `0xC06D007E` / `0xE0434352` (KERNELBASE race) | High | Sep 2025 CU | Feb 2026 CU | None effective; apply Feb 2026 CU |
 | I-15 | Modern UI | Text web part read-only while "Text and table formatting" pane open | Medium | Jan 2026 CU | *Not yet fixed at 2026-04-18* — monitor | Close formatting pane before editing text |
 | I-16 | Upgrade / DB | `Invalid column name 'SAFE_NOTIFICATION_DATA'` when psconfig upgrades Jan 2026 schema to Mar 2026 CU | Critical (blocks upgrade) | Mar 2026 CU | Apr 2026 CU (complete fix) | Install Feb 2026 CU **first**, run Config Wizard, *then* Mar/Apr 2026 CU; or open MS support ticket if already broken |
+| I-17 | Search / Timer Jobs | **QueryLogJobDefinition SQL connection pool exhaustion** — `QueryLogJobDefinition` fails with Event 6399: *"Timeout expired. The timeout period elapsed prior to obtaining a connection from the pool"*. Timer job leaks SQL connections on every run; pool (max 100) fills up after a few days causing cascading timer job failures. ULS signature: `QueryLogProcessor: AssignDocIdsToResults error: The method 'EndExecuteReader' cannot be called`. Reproducible on SPSE / SQL 2022 / WS2025 single-server farm. | High | Mar 2025 CU (regression) | Not fixed as of Oct 2025 (still open in Jul + Aug 2025 CU comments) | Disable the **Query Logging Timer Job** in Central Admin to stop connection leak. Restarting SPTimerV4 temporarily clears the pool. Source: [MS Q&A thread](https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2) |
 
 ---
 
@@ -240,5 +242,7 @@ Reasons:
 | spse-2026-04-cu | https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/ |
 | sep2025-issue-summary | https://blog.stefan-gossner.com/2025/09/25/summary-and-status-of-issues-identified-with-september-2025-cu-for-sharepoint/ |
 | mar2026-psconfig-issue | https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/ |
+| mslearn-critical-events-july2025 | https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2 |
+| exploit-protection-owstimer | https://blog.stefan-gossner.com/2025/09/16/trending-issue-sptimerv4-fails-to-start-on-windows-server-2025-after-installing-september-2025-cu/ |
 
 All content in this knowledge base was indexed into the local context-mode sandbox (not stored verbatim in this file). Re-query via `ctx_search` against the listed source labels for verbatim quotes.
