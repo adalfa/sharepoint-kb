@@ -1,15 +1,11 @@
 {
   "generated": "2026-04-18",
   "product": "SharePoint Server Subscription Edition",
-  "coverage": {
-    "start": "2026-01",
-    "end": "2026-04"
-  },
   "current_recommendation": {
     "cu": "2026-04",
     "build": "16.0.19725.20210",
     "kb": "KB5002853",
-    "reason": "Contains the complete fix for the Mar 2026 CU SAFE_NOTIFICATION_DATA psconfig upgrade regression (I-01); no outstanding caution banner; April security rollup."
+    "reason": "Complete fix for Mar 2026 CU SAFE_NOTIFICATION_DATA psconfig regression; rolls up all Sep 2025 CU regressions fixed to date; current monthly security baseline."
   },
   "cus": [
     {
@@ -17,33 +13,15 @@
       "release_date": "2026-04-14",
       "build": "16.0.19725.20210",
       "kb": ["KB5002853"],
-      "download_id": "108607",
-      "stefan_verdict": "strongly_recommended",
+      "stefan_verdict": "recommended",
       "security_update": true,
       "features": [],
       "fixes": [
-        "Complete fix for I-01 (SAFE_NOTIFICATION_DATA psconfig failure when upgrading from Jan 2026 CU schema)."
+        "Complete fix for Jan→Mar 2026 CU psconfig upgrade failure (SAFE_NOTIFICATION_DATA)"
       ],
-      "security_fixes": [
-        {"cve": "CVE-2026-32201", "summary": "Listed in CISA Known Exploited Vulnerabilities catalog — actively exploited. Accelerate patching."}
-      ],
-      "known_issues": [
-        {
-          "id": "I-03",
-          "component": "Search / psconfig",
-          "severity": "high",
-          "status": "unconfirmed",
-          "summary": "Configuration Wizard fails upgrading SearchAdminDatabase with 'Cannot find the object proc_MSS_GetCrawlErrorOrWarningCounts'. Single community report on Stefan's Apr CU post comments; no Stefan response yet.",
-          "introduced_in": "2026-04",
-          "fixed_in": null,
-          "workaround": "Snapshot Search Admin DB before install. If hit: open Microsoft Support ticket; do not self-repair schema.",
-          "source_urls": [
-            "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"
-          ]
-        }
-      ],
+      "known_issues": [],
       "prerequisites": [
-        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
+        "If coming from Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 or remove NT Authority\\system from WSS_WPG and IIS_IUSRS first"
       ],
       "sources": [
         "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
@@ -55,37 +33,31 @@
       "id": "2026-03",
       "release_date": "2026-03-10",
       "build": "16.0.19127.20xxx",
-      "build_note": "not captured in fetched preview; see KB5002843",
+      "build_note": "exact build not captured from blog header; see KB5002843",
       "kb": ["KB5002843"],
-      "download_id": "108570",
       "stefan_verdict": "caution",
       "security_update": true,
       "features": [],
       "fixes": [
-        "SPAdminV4 failure on Windows Server 2025 (Sep 2025 CU regression).",
-        "Secure Store group-claim validation after Sep 2025 CU."
+        "SPAdminV4 failure on Windows Server 2025 (Sep 2025 regression)",
+        "Secure Store group-claim validation after Sep 2025 CU"
       ],
       "known_issues": [
         {
-          "id": "I-01",
-          "component": "Upgrade / psconfig",
+          "id": "I-16",
+          "component": "Upgrade / Content DB schema",
           "severity": "critical",
-          "summary": "Configuration Wizard fails with 'Invalid column name SAFE_NOTIFICATION_DATA' when Mar 2026 CU installer upgrades a Jan 2026 CU schema.",
+          "summary": "psconfig upgrade fails with 'Invalid column name SAFE_NOTIFICATION_DATA' when upgrading from Jan 2026 CU DB schema",
           "introduced_in": "2026-03",
           "fixed_in": "2026-04",
-          "workaround": "Before install: install Feb 2026 CU and run Configuration Wizard, then install Mar 2026 CU. If already broken: open Microsoft Support ticket; engineering-guided remediation only.",
+          "workaround": "Scenario 1 (Mar not applied): install Feb 2026 CU + run Config Wizard first. Scenario 2 (Mar already applied): open MS Support ticket.",
           "source_urls": [
             "https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/"
           ]
         }
       ],
-      "prerequisites": [
-        "Do NOT install directly on top of Jan 2026 CU schema — install Feb 2026 CU as intermediate first.",
-        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
-      ],
       "sources": [
         "https://blog.stefan-gossner.com/2026/03/10/march-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
-        "https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/",
         "https://support.microsoft.com/en-us/kb/5002843"
       ]
     },
@@ -94,19 +66,26 @@
       "release_date": "2026-02-10",
       "build": "16.0.19127.20518",
       "kb": ["KB5002833"],
-      "download_id": "108554",
-      "stefan_verdict": "must_install_or_higher",
+      "stefan_verdict": "recommended",
       "security_update": true,
-      "features": [],
       "fixes": [
-        "w3wp crash 0xC0000409 in owssvr.dll (Sep 2025 CU regression).",
-        "w3wp crash 0xC06D007E / 0xE0434352 race (Sep 2025 CU regression).",
-        "SP2010 workflow CSC.EXE failure (Sep 2025 CU regression)."
+        "w3wp crash 0xC0000409 in owssvr.dll (Sep 2025 regression)",
+        "w3wp crash 0xC06D007E / 0xE0434352 KERNELBASE race (Sep 2025 regression)",
+        "SP2010 and Nintex workflow failure caused by OWSTIMER Exploit Protection (Sep 2025 regression, I-11)"
       ],
-      "known_issues": [],
-      "carries_forward": ["I-02"],
-      "prerequisites": [
-        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
+      "known_issues": [
+        {
+          "id": "I-15",
+          "component": "Modern UI / Text web part",
+          "severity": "medium",
+          "summary": "Text web part content area read-only while Text-and-table-formatting pane is open (carried from Jan 2026 CU)",
+          "introduced_in": "2026-01",
+          "fixed_in": null,
+          "workaround": "Close formatting pane before editing text",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2026/03/11/trending-issue-text-web-part-cannot-be-edited-while-text-and-table-formatting-pane-is-open/"
+          ]
+        }
       ],
       "sources": [
         "https://blog.stefan-gossner.com/2026/02/10/february-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
@@ -118,144 +97,265 @@
       "release_date": "2026-01-13",
       "build": "16.0.19127.20442",
       "kb": ["KB5002822"],
-      "download_id": "108517",
       "stefan_verdict": "caution",
       "security_update": true,
-      "features": [],
       "fixes": [],
       "known_issues": [
         {
-          "id": "I-02",
+          "id": "I-15",
           "component": "Modern UI / Text web part",
           "severity": "medium",
-          "summary": "Text web part content area becomes read-only while the 'Text and table formatting' pane is open.",
+          "summary": "Text web part content area becomes read-only while Text-and-table-formatting pane is open",
           "introduced_in": "2026-01",
           "fixed_in": null,
-          "workaround": "Close the formatting pane before editing text.",
+          "workaround": "Close formatting pane before editing",
           "source_urls": [
-            "https://blog.stefan-gossner.com/2026/01/13/january-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"
+            "https://blog.stefan-gossner.com/2026/03/11/trending-issue-text-web-part-cannot-be-edited-while-text-and-table-formatting-pane-is-open/"
           ]
         }
       ],
-      "regression_trap": "Jan 2026 CU schema is incompatible with Mar 2026 CU installer (I-01). Do not jump Jan → Mar directly; install Feb 2026 CU first, or skip straight to Apr 2026 CU.",
-      "prerequisites": [
-        "If source farm is Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 first (X-01)."
-      ],
+      "regression_trap": "Upgrading Jan 2026 schema directly to Mar 2026 CU fails — install Feb 2026 CU first (or skip straight to Apr 2026 CU).",
       "sources": [
         "https://blog.stefan-gossner.com/2026/01/13/january-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
         "https://support.microsoft.com/en-us/kb/5002822"
       ]
+    },
+    {
+      "id": "2025-12",
+      "release_date": "2025-12-09",
+      "build": "16.0.19127.20378",
+      "kb": ["KB5002815"],
+      "stefan_verdict": "recommended",
+      "security_update": true,
+      "fixes": [],
+      "known_issues": [
+        {
+          "id": "I-13",
+          "component": "Worker process / owssvr.dll",
+          "severity": "high",
+          "summary": "w3wp crash with exception 0xC0000409",
+          "introduced_in": "2025-09",
+          "fixed_in": "2026-02",
+          "workaround": null,
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2025/12/19/trending-issue-sharepoint-worker-process-crashes-with-0xc0000409-exception/"
+          ]
+        },
+        {
+          "id": "I-14",
+          "component": "Worker process / KERNELBASE",
+          "severity": "high",
+          "summary": "w3wp crash 0xC06D007E + 0xE0434352 (race condition)",
+          "introduced_in": "2025-09",
+          "fixed_in": "2026-02",
+          "workaround": null,
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2025/12/19/trending-issue-sharepoint-worker-process-crashes-with-0xc06d007e-and-0xe0434352-exceptions/"
+          ]
+        }
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2025/12/09/december-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002815"
+      ]
+    },
+    {
+      "id": "2025-11",
+      "release_date": "2025-11-11",
+      "build": "16.0.19127.20338",
+      "kb": ["KB5002800"],
+      "stefan_verdict": "recommended",
+      "security_update": true,
+      "fixes": [],
+      "known_issues": [],
+      "prerequisites": [
+        "If on Sep 2025 CU: remove NT Authority\\system from WSS_WPG and IIS_IUSRS"
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2025/11/11/november-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002800"
+      ]
+    },
+    {
+      "id": "2025-10",
+      "release_date": "2025-10-14",
+      "build": "16.0.19127.20262",
+      "kb": ["KB5002786"],
+      "stefan_verdict": "strongly_recommended",
+      "security_update": true,
+      "fixes": [
+        "Solution deployment failure (Sep 2025 regression)",
+        "SP2013 workflows + Classic Workflow Manager failure (Sep 2025 regression)",
+        "Future SharePoint fixes fail to install (WSS_WPG / IIS_IUSRS perm) — code fix; existing farms must still remediate",
+        "Health rule false-positive on WSS_WPG"
+      ],
+      "known_issues": [],
+      "prerequisites": [
+        "If on Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 before install"
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2025/10/14/october-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002786"
+      ]
+    },
+    {
+      "id": "2025-09",
+      "release_date": "2025-09-09",
+      "build": "16.0.19127.20100",
+      "kb": ["KB5002784"],
+      "stefan_verdict": "caution",
+      "security_update": true,
+      "features": [
+        "Feature Update 25H2",
+        "AMSI enabled by default for all web applications",
+        "Automatic machine-key rotation timer job (ASP.NET viewstate keys)",
+        "Test-DefenderAndAmsiWorkProperly cmdlet",
+        "Windows Exploit Protection on OWSTIMER.EXE (blocks child processes)",
+        "_LAYOUTS directory write-hardening (removes WSS_WPG/IIS_IUSRS write)",
+        "New stronger Secure Store encryption algorithm"
+      ],
+      "known_issues": [
+        { "id": "I-04", "component": "Workflows", "severity": "high", "summary": "SP2013 workflows + Classic WFM fail", "introduced_in": "2025-09", "fixed_in": "2025-10", "workaround": "Update SPWFM to Aug 2025 SPWFM CU" },
+        { "id": "I-05", "component": "Solutions", "severity": "high", "summary": "Solution deployment fails", "introduced_in": "2025-09", "fixed_in": "2025-10", "workaround": null },
+        { "id": "I-06", "component": "Patching", "severity": "high", "summary": "Future SharePoint fixes fail to install (perm regression)", "introduced_in": "2025-09", "fixed_in": "2025-10", "workaround": "Run Fix-SeptemberCU-Permission-Problem.ps1 OR remove NT Authority\\system from WSS_WPG/IIS_IUSRS" },
+        { "id": "I-07", "component": "SPAdminV4 / Windows Server 2025", "severity": "high", "summary": "SPAdminV4 fails to start on WS2025 due to Exploit Protection", "introduced_in": "2025-09", "fixed_in": "2026-03", "workaround": "Relax Exploit Protection on OWSTIMER.EXE" },
+        { "id": "I-08", "component": "Health analyzer", "severity": "low", "summary": "False-positive: WSS_WPG elevated permissions", "introduced_in": "2025-09", "fixed_in": "2025-10", "workaround": "Ignore rule" },
+        { "id": "I-09", "component": "Admin tools", "severity": "medium", "summary": "PSCONFIG / Mgmt Shell fail when run under Farm Service Account", "introduced_in": "2025-09", "fixed_in": "by_design", "workaround": "Use a dedicated admin account" },
+        { "id": "I-10", "component": "Web apps / AMSI", "severity": "info", "summary": "AMSI enabled by default", "introduced_in": "2025-09", "fixed_in": "by_design", "workaround": "See Oct 2023 CU SPRequestFilterModule trending-issue post for legacy-customisation 500 errors" },
+        { "id": "I-11", "component": "Workflows / SP2010 + Nintex", "severity": "high", "summary": "SP2010 workflows AND Nintex workflows fail (CSC.EXE child-process blocked by OWSTIMER Exploit Protection) — Nintex failure confirmed in Stefan's Sep 2025 issue-summary blog comments after KB5002784 + KB5002786", "introduced_in": "2025-09", "fixed_in": "2026-02", "workaround": "Relax Exploit Protection on OWSTIMER.EXE", "source_urls": ["https://blog.stefan-gossner.com/2025/09/25/summary-and-status-of-issues-identified-with-september-2025-cu-for-sharepoint/"] },
+        { "id": "I-12", "component": "Secure Store", "severity": "high", "summary": "Group claim validation fails / stored creds unreadable (new encryption algo)", "introduced_in": "2025-09", "fixed_in": "2026-03", "workaround": "Re-enter credentials / re-create target applications" },
+        { "id": "I-13", "component": "Worker process", "severity": "high", "summary": "w3wp crash 0xC0000409 in owssvr.dll", "introduced_in": "2025-09", "fixed_in": "2026-02", "workaround": null },
+        { "id": "I-14", "component": "Worker process", "severity": "high", "summary": "w3wp crash 0xC06D007E / 0xE0434352 (race)", "introduced_in": "2025-09", "fixed_in": "2026-02", "workaround": null }
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2025/09/09/september-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://blog.stefan-gossner.com/2025/09/25/summary-and-status-of-issues-identified-with-september-2025-cu-for-sharepoint/",
+        "https://blog.stefan-gossner.com/2025/09/09/new-security-features-released-with-september-2025-cu-for-all-supported-sharepoint-versions/",
+        "https://support.microsoft.com/en-us/kb/5002784"
+      ]
+    },
+    {
+      "id": "2025-08",
+      "release_date": "2025-08-12",
+      "build": "16.0.18526.20518",
+      "kb": ["KB5002773"],
+      "stefan_verdict": "recommended",
+      "security_update": true,
+      "features": [
+        "From this CU onward, SPSE monthly CUs are always also security updates"
+      ],
+      "fixes": [
+        "User Profile Language Synchronization Job failure (per Stefan Q&A)"
+      ],
+      "known_issues": [
+        {
+          "id": "I-02",
+          "component": "SPWFM (not SPSE itself)",
+          "severity": "medium",
+          "summary": "System.Memory.dll missing after Aug 2025 SPWFM CU on non-SPSE hosts",
+          "introduced_in": "2025-08",
+          "fixed_in": "2025-08 (updated assembly list, 2025-08-21)",
+          "workaround": "Manually deploy listed assemblies",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2025/08/21/trending-issue-system-memory-dll-missing-after-installing-august-2025-cu-for-sharepoint-workflow-manager/"
+          ]
+        },
+        {
+          "id": "I-03",
+          "component": "BDC",
+          "severity": "medium",
+          "summary": "LobSystem types DotNetAssembly / WebService remain disabled (since Jun 2025 CU)",
+          "introduced_in": "2025-06",
+          "fixed_in": "by_design",
+          "workaround": "Documented farm-property re-enable",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2025/08/12/reenable-support-for-bdc-model-system-type-dotnetassembly-and-webservice/"
+          ]
+        }
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2025/08/12/august-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002773"
+      ]
+    },
+    {
+      "id": "2025-07",
+      "release_date": "2025-07-08",
+      "build": "16.0.18526.20424",
+      "kb": ["KB5002751"],
+      "stefan_verdict": "must_install_or_higher",
+      "security_update": "partial",
+      "features": [],
+      "fixes": [
+        "Query Logging Job timeout (note: actually fixed in Jun 2025 CU, not Jul)"
+      ],
+      "known_issues": [
+        {
+          "id": "I-01",
+          "component": "Security / whole farm",
+          "severity": "critical",
+          "summary": "ToolShell active exploitation — vulns only partially addressed by Jul Security Update; IoC = spinstall0.aspx in LAYOUTS",
+          "introduced_in": "pre-2025-07",
+          "fixed_in": "2025-08",
+          "workaround": "Install at least Aug 2025 CU; hunt for spinstall0.aspx; rotate machine keys; verify AMSI",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2025/07/21/important-active-attacks-targeting-on-premises-sharepoint-server-customers/",
+            "https://blog.stefan-gossner.com/2025/07/23/clarifying-common-questions-around-amsi-in-sharepoint/"
+          ]
+        }
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2025/07/08/july-2025-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://support.microsoft.com/en-us/kb/5002751"
+      ]
     }
   ],
   "issue_index": [
-    {
-      "id": "I-01",
-      "component": "Upgrade / psconfig",
-      "summary": "Invalid column name 'SAFE_NOTIFICATION_DATA' when Mar 2026 CU installer tries to upgrade a Jan 2026 CU schema.",
-      "severity": "critical",
-      "introduced_in": "2026-03",
-      "fixed_in": "2026-04",
-      "workaround": "Install Feb 2026 CU and run Config Wizard before Mar, or jump straight to Apr 2026 CU."
-    },
-    {
-      "id": "I-02",
-      "component": "Modern UI / Text web part",
-      "summary": "Text web part read-only while 'Text and table formatting' pane is open.",
-      "severity": "medium",
-      "introduced_in": "2026-01",
-      "fixed_in": null,
-      "workaround": "Close formatting pane before editing text."
-    },
-    {
-      "id": "I-03",
-      "component": "Search / psconfig",
-      "summary": "Apr 2026 CU Configuration Wizard fails upgrading SearchAdminDatabase with missing proc_MSS_GetCrawlErrorOrWarningCounts.",
-      "severity": "high",
-      "status": "unconfirmed",
-      "introduced_in": "2026-04",
-      "fixed_in": null,
-      "workaround": "Snapshot SearchAdminDatabase before install; open MS Support ticket if hit."
-    },
-    {
-      "id": "X-01",
-      "component": "Patching / permissions",
-      "summary": "Future SharePoint fixes fail to install because NT Authority\\system is a member of WSS_WPG / IIS_IUSRS.",
-      "severity": "high",
-      "introduced_in": "2025-09",
-      "fixed_in": "2025-10 (code fix; existing farms must still remediate)",
-      "workaround": "Run Fix-SeptemberCU-Permission-Problem.ps1 before installing any CU in this window.",
-      "scope": "carryover from outside window"
-    }
+    { "id": "I-01", "component": "Security", "summary": "ToolShell active exploitation (spinstall0.aspx)", "severity": "critical", "introduced_in": "pre-2025-07", "fixed_in": "2025-08" },
+    { "id": "I-02", "component": "SPWFM", "summary": "System.Memory.dll missing on bare SPWFM hosts", "severity": "medium", "introduced_in": "2025-08", "fixed_in": "2025-08" },
+    { "id": "I-03", "component": "BDC", "summary": "LobSystem DotNetAssembly/WebService disabled", "severity": "medium", "introduced_in": "2025-06", "fixed_in": "by_design" },
+    { "id": "I-04", "component": "Workflows", "summary": "SP2013 + Classic WFM break", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2025-10" },
+    { "id": "I-05", "component": "Solutions", "summary": "Solution deployment fails", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2025-10" },
+    { "id": "I-06", "component": "Patching", "summary": "Future fixes fail to install (perm regression)", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2025-10" },
+    { "id": "I-07", "component": "SPAdminV4/WS2025", "summary": "SPAdminV4 fails to start on Windows Server 2025", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-03" },
+    { "id": "I-08", "component": "Health analyzer", "summary": "False-positive WSS_WPG elevated", "severity": "low", "introduced_in": "2025-09", "fixed_in": "2025-10" },
+    { "id": "I-09", "component": "Admin tools", "summary": "PSCONFIG fails under Farm Service Account", "severity": "medium", "introduced_in": "2025-09", "fixed_in": "by_design" },
+    { "id": "I-10", "component": "AMSI", "summary": "AMSI enabled by default", "severity": "info", "introduced_in": "2025-09", "fixed_in": "by_design" },
+    { "id": "I-11", "component": "SP2010 workflows / Nintex workflows", "summary": "CSC.EXE child-process blocked by OWSTIMER Exploit Protection — affects both native SP2010 workflows and Nintex workflows (confirmed in Stefan blog comments after KB5002784+KB5002786)", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-02", "workaround": "Relax Exploit Protection on OWSTIMER.EXE", "source_urls": ["https://blog.stefan-gossner.com/2025/09/25/summary-and-status-of-issues-identified-with-september-2025-cu-for-sharepoint/"] },
+    { "id": "I-12", "component": "Secure Store", "summary": "Group claim validation / creds undecryptable", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-03" },
+    { "id": "I-13", "component": "Worker process", "summary": "w3wp 0xC0000409 owssvr.dll", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-02" },
+    { "id": "I-14", "component": "Worker process", "summary": "w3wp 0xC06D007E/0xE0434352 race", "severity": "high", "introduced_in": "2025-09", "fixed_in": "2026-02" },
+    { "id": "I-15", "component": "Modern UI Text web part", "summary": "Read-only while formatting pane open", "severity": "medium", "introduced_in": "2026-01", "fixed_in": null },
+    { "id": "I-16", "component": "Upgrade schema", "summary": "SAFE_NOTIFICATION_DATA psconfig failure Jan→Mar 2026", "severity": "critical", "introduced_in": "2026-03", "fixed_in": "2026-04" }
   ],
   "upgrade_matrix": [
-    {
-      "from": "pre-2026-01",
-      "to": "2026-04",
-      "intermediate_required": false,
-      "intermediate_stops": [],
-      "rationale": "Clean jump. If farm was ever on Sep 2025 CU, run Fix-SeptemberCU-Permission-Problem.ps1 first.",
-      "blockers": []
-    },
-    {
-      "from": "2026-01",
-      "to": "2026-04",
-      "intermediate_required": true,
-      "intermediate_stops": ["2026-02"],
-      "rationale": "Jan 2026 CU schema triggers I-01 with any later installer that lacks the fix. Feb 2026 CU is the mandatory intermediate; run Config Wizard after Feb, then install Apr. (Alt: Jan → Apr direct also works because Apr contains the complete I-01 fix — verify with Microsoft before choosing.)",
-      "blockers": ["I-01"]
-    },
-    {
-      "from": "2026-02",
-      "to": "2026-04",
-      "intermediate_required": false,
-      "intermediate_stops": [],
-      "rationale": "Feb schema is compatible with Apr's installer.",
-      "blockers": []
-    },
-    {
-      "from": "2026-03",
-      "to": "2026-04",
-      "intermediate_required": false,
-      "intermediate_stops": [],
-      "rationale": "Mar schema is compatible with Apr's installer (Mar must have been installed cleanly from Feb, not Jan).",
-      "blockers": []
-    },
-    {
-      "from": "2026-03-broken",
-      "to": "2026-04",
-      "intermediate_required": false,
-      "intermediate_stops": [],
-      "rationale": "Mar installed on top of Jan with failing psconfig: open Microsoft Support ticket. Engineering-guided remediation only; do not self-repair schema.",
-      "blockers": ["I-01 (already manifested)"]
-    },
-    {
-      "from": "2026-04",
-      "to": "2026-04",
-      "intermediate_required": false,
-      "intermediate_stops": [],
-      "rationale": "Already on target.",
-      "blockers": []
-    }
+    { "from": "<=2025-06", "to": "2026-04", "intermediate_required": false, "rationale": "Skips all Sep 2025 CU regressions; must scan for spinstall0.aspx and rotate keys.", "blockers": [] },
+    { "from": "2025-07", "to": "2026-04", "intermediate_required": false, "rationale": "ToolShell fully remediated by Aug CU and beyond.", "blockers": [] },
+    { "from": "2025-08", "to": "2026-04", "intermediate_required": false, "rationale": "Clean path; no perm damage.", "blockers": [] },
+    { "from": "2025-09", "to": "2026-04", "intermediate_required": false, "rationale": "Apr 2026 rolls up all Sep 2025 CU fixes incl. SPAdminV4 WS2025.", "blockers": ["Must run Fix-SeptemberCU-Permission-Problem.ps1 OR remove NT Authority\\system from WSS_WPG/IIS_IUSRS BEFORE installing"] },
+    { "from": "2025-10", "to": "2026-04", "intermediate_required": false, "rationale": "No blockers.", "blockers": [] },
+    { "from": "2025-11", "to": "2026-04", "intermediate_required": false, "rationale": "No blockers.", "blockers": [] },
+    { "from": "2025-12", "to": "2026-04", "intermediate_required": false, "rationale": "Fixes 0xC0000409 / 0xC06D007E crashes — expedite.", "blockers": [] },
+    { "from": "2026-01", "to": "2026-04", "intermediate_required": false, "rationale": "Apr 2026 CU contains the complete fix for I-16; Jan→Apr direct is safe. If following Stefan's documented workaround, route via Feb 2026 CU first.", "blockers": ["DO NOT install Mar 2026 CU on top of Jan 2026 CU DB schema"] },
+    { "from": "2026-02", "to": "2026-04", "intermediate_required": false, "rationale": "Clean.", "blockers": [] },
+    { "from": "2026-03-ok", "to": "2026-04", "intermediate_required": false, "rationale": "Mar installed from Feb base — clean.", "blockers": [] },
+    { "from": "2026-03-broken", "to": "2026-04", "intermediate_required": true, "rationale": "Farm already broken with SAFE_NOTIFICATION_DATA error — open MS Support ticket for engineering-guided remediation; do not self-repair schema.", "blockers": ["Upgrade wizard cannot complete until MS remediates"] }
   ],
   "patching_procedure": [
-    "Read target CU's Stefan post for last-minute blockers.",
-    "Back up content + config DBs.",
-    "Install binaries on all SharePoint machines.",
-    "Run SharePoint Products Configuration Wizard (PSConfigUI.exe).",
-    "Run Test-DefenderAndAmsiWorkProperly (available since Sep 2025 CU).",
-    "Verify machine-key rotation timer job health (since Sep 2025 CU)."
+    "Read target CU's Stefan post for last-minute blockers",
+    "Back up all content + config DBs",
+    "Install binaries on all SharePoint machines",
+    "Run SharePoint Products Configuration Wizard (PSConfigUI.exe preferred over psconfig.exe)",
+    "Run Test-DefenderAndAmsiWorkProperly (Sep 2025+)",
+    "Verify machine-key rotation timer job health (Sep 2025+)"
   ],
   "external_references": {
     "product_servicing_policy": "https://learn.microsoft.com/en-us/sharepoint/product-servicing-policy/updated-product-servicing-policy-for-sharepoint-server-se",
     "servicing_faq": "https://learn.microsoft.com/en-us/sharepoint/product-servicing-policy/faq/faq-subscription-edition",
     "feature_update_25h1_25h2": "https://learn.microsoft.com/en-us/SharePoint/what-s-new/new-and-improved-features-in-sharepoint-server-subscription-edition-25h1-release",
-    "deprecations": "https://learn.microsoft.com/en-us/sharepoint/what-s-new/what-s-deprecated-or-removed-from-sharepoint-server-subscription-edition"
-  },
-  "source_log": [
-    {"label": "spse-2026-01-cu", "url": "https://blog.stefan-gossner.com/2026/01/13/january-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
-    {"label": "spse-2026-02-cu", "url": "https://blog.stefan-gossner.com/2026/02/10/february-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
-    {"label": "spse-2026-03-cu", "url": "https://blog.stefan-gossner.com/2026/03/10/march-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
-    {"label": "spse-2026-04-cu", "url": "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/"},
-    {"label": "mar2026-psconfig-issue", "url": "https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/"}
-  ]
+    "deprecations": "https://learn.microsoft.com/en-us/sharepoint/what-s-new/what-s-deprecated-or-removed-from-sharepoint-server-subscription-edition",
+    "sp2010_workflow_eos": "2026-07-14",
+    "oos_retirement": "2026-12-31",
+    "fix_perm_script": "https://aka.ms/stefangossner/Fix-SeptemberCU-Permission-Problem.ps1"
+  }
 }
