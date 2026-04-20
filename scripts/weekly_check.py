@@ -72,7 +72,8 @@ def main() -> int:
     try:
         feed = parse_items(fetch("https://blog.stefan-gossner.com/feed/"))
         newest = feed[0] if feed else None
-        apr_comments = len(parse_items(fetch(APR_POST + "/feed/")))
+        apr_comment_items = parse_items(fetch(APR_POST + "/feed/"))
+        apr_comments = len(apr_comment_items)
     except Exception as exc:
         post_heartbeat(f"Heartbeat {today} UTC: fetch error — {type(exc).__name__}: {exc}")
         return 0
@@ -86,10 +87,22 @@ def main() -> int:
     }
 
     deltas = []
+    new_posts: list[dict] = []
+    new_comments: list[dict] = []
+
     if prev:
         if current["newest_post_link"] != prev.get("newest_post_link"):
-            deltas.append(f"New post: **{current['newest_post_title']}** ({current['newest_post_pubDate']}) — {current['newest_post_link']}")
+            prev_link = prev.get("newest_post_link", "")
+            for item in feed:
+                if item["link"] == prev_link:
+                    break
+                new_posts.append(item)
+            if not new_posts:
+                new_posts = feed[:1]
+            deltas.append(f"New post(s): {len(new_posts)} since last check")
         if current["apr2026_comment_count"] != prev.get("apr2026_comment_count"):
+            n = current["apr2026_comment_count"] - (prev.get("apr2026_comment_count") or 0)
+            new_comments = apr_comment_items[:max(n, 0)]
             deltas.append(f"Apr 2026 CU comment count: {prev.get('apr2026_comment_count')} → {current['apr2026_comment_count']}")
 
     if deltas:
@@ -108,8 +121,22 @@ def main() -> int:
         git("add", str(STATE))
         git("commit", "-m", f"Weekly check {today}: " + "; ".join(deltas))
         git("push", "--force-with-lease", "-u", "origin", branch)
-        body = "## Deltas detected\n\n" + "\n".join(f"- {d}" for d in deltas) + \
-               "\n\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed."
+
+        sections = ["## Deltas detected\n"]
+        if new_posts:
+            sections.append("### New blog posts\n")
+            for p in new_posts:
+                sections.append(f"- **{p['title']}** — {p['pubDate']}\n  {p['link']}")
+        if new_comments:
+            prev_count = prev.get("apr2026_comment_count", 0)
+            sections.append(f"\n### Apr 2026 CU — new comments ({prev_count} → {current['apr2026_comment_count']})\n")
+            for c in new_comments:
+                sections.append(f"- **{c['title']}** — {c['pubDate']}\n  {c['link']}")
+        if not new_posts and not new_comments:
+            sections.extend(f"- {d}" for d in deltas)
+        sections.append("\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed.")
+        body = "\n".join(sections)
+
         gh("pr", "create",
            "--base", "main",
            "--head", branch,
