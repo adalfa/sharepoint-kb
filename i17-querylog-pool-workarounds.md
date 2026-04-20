@@ -85,6 +85,10 @@ Register a Windows Scheduled Task to restart the timer service every night at 02
 Run once from an **elevated PowerShell** session on each SharePoint server:
 
 ```powershell
+if (-not [System.Diagnostics.EventLog]::SourceExists('SPTimerV4-Restart')) {
+    New-EventLog -LogName Application -Source 'SPTimerV4-Restart'
+}
+
 $action = New-ScheduledTaskAction -Execute "powershell.exe" `
     -Argument "-NonInteractive -Command `"Restart-Service SPTimerV4; Write-EventLog -LogName Application -Source 'SPTimerV4-Restart' -EntryType Information -EventId 9999 -Message 'Scheduled SPTimerV4 restart completed.'`""
 
