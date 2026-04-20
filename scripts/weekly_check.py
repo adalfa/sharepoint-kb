@@ -94,6 +94,16 @@ def main() -> int:
 
     if deltas:
         branch = f"spse-weekly-{today}"
+        remote_ref = subprocess.run(
+            ["git", "ls-remote", "--heads", "origin", branch],
+            capture_output=True, text=True
+        ).stdout
+        if remote_ref.strip():
+            post_heartbeat(
+                f"Heartbeat {today} UTC: deltas detected but branch `{branch}` already exists on remote — PR likely already open. "
+                f"Apr 2026 CU comment count: {current['apr2026_comment_count']}."
+            )
+            return 0
         git("config", "user.email", "action@github.com")
         git("config", "user.name", "spse-weekly-bot")
         git("checkout", "-b", branch)
