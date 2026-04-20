@@ -94,13 +94,10 @@ def main() -> int:
 
     if deltas:
         branch = f"spse-weekly-{today}"
-        remote_ref = subprocess.run(
-            ["git", "ls-remote", "--heads", "origin", branch],
-            capture_output=True, text=True
-        ).stdout
-        if remote_ref.strip():
+        open_prs = json.loads(gh("pr", "list", "--head", branch, "--state", "open", "--json", "number"))
+        if open_prs:
             post_heartbeat(
-                f"Heartbeat {today} UTC: deltas detected but branch `{branch}` already exists on remote — PR likely already open. "
+                f"Heartbeat {today} UTC: deltas detected but PR already open for `{branch}`. "
                 f"Apr 2026 CU comment count: {current['apr2026_comment_count']}."
             )
             return 0
@@ -110,7 +107,7 @@ def main() -> int:
         STATE.write_text(json.dumps(current, indent=2) + "\n")
         git("add", str(STATE))
         git("commit", "-m", f"Weekly check {today}: " + "; ".join(deltas))
-        git("push", "-u", "origin", branch)
+        git("push", "--force-with-lease", "-u", "origin", branch)
         body = "## Deltas detected\n\n" + "\n".join(f"- {d}" for d in deltas) + \
                "\n\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed."
         gh("pr", "create",
