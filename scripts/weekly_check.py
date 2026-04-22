@@ -152,11 +152,13 @@ def main() -> int:
                "--body", body,
                "--assignee", "adalfa")
         except RuntimeError as exc:
-            if "already exists" in str(exc).lower() or "pull request" in str(exc).lower():
+            err = str(exc)
+            if "already exists" in err.lower():
                 existing = json.loads(gh("pr", "list", "--head", branch, "--state", "all", "--json", "url"))
                 url = existing[0]["url"] if existing else "(unknown)"
                 post_heartbeat(f"Heartbeat {today} UTC: PR already existed for `{branch}`: {url}")
             else:
+                post_heartbeat(f"Heartbeat {today} UTC: gh pr create failed for `{branch}`:\n```\n{err}\n```")
                 raise
         return 0
 
