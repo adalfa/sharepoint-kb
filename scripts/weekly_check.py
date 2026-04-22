@@ -129,7 +129,7 @@ def main() -> int:
                 sections.append(f"- **{p['title']}** — {p['pubDate']}\n  {p['link']}")
         if new_comments:
             prev_count = prev.get("apr2026_comment_count", 0)
-            sections.append(f"\n### Apr 2026 CU — new comments ({prev_count} → {current['apr2026_comment_count']})\n")
+            sections.append(f"\n### Apr 2026 CU — new comments ({prev_count} → {current['apr2026_comment_count']})\n\n{APR_POST}\n")
             for c in new_comments:
                 sections.append(f"- **{c['title']}** — {c['pubDate']}\n  {c['link']}")
         if not new_posts and not new_comments:
