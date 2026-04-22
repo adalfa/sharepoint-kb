@@ -112,22 +112,12 @@ def main() -> int:
             deltas.append(f"Apr 2026 CU comment count: {prev.get('apr2026_comment_count')} → {current['apr2026_comment_count']}")
 
     if deltas:
-        branch = f"spse-weekly-{today}"
-        all_prs = json.loads(gh("pr", "list", "--head", branch, "--state", "all", "--json", "number,url,state"))
-        open_prs = [p for p in all_prs if p["state"] == "OPEN"]
-        if open_prs:
-            post_heartbeat(
-                f"Heartbeat {today} UTC: deltas detected but PR already open for `{branch}`: "
-                f"{open_prs[0]['url']}. Apr 2026 CU comment count: {current['apr2026_comment_count']}."
-            )
-            return 0
         git("config", "user.email", "action@github.com")
         git("config", "user.name", "spse-weekly-bot")
-        git("checkout", "-b", branch)
         STATE.write_text(json.dumps(current, indent=2) + "\n")
         git("add", str(STATE))
         git("commit", "-m", f"Weekly check {today}: " + "; ".join(deltas))
-        git("push", "--force-with-lease", "-u", "origin", branch)
+        git("push")
 
         sections = ["## Deltas detected\n"]
         if new_posts:
@@ -144,22 +134,10 @@ def main() -> int:
         sections.append("\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed.")
         body = "\n".join(sections)
 
-        try:
-            gh("pr", "create",
-               "--base", "main",
-               "--head", branch,
-               "--title", f"Weekly SPSE CU check — {today}",
-               "--body", body,
-               "--assignee", "adalfa")
-        except RuntimeError as exc:
-            err = str(exc)
-            if "already exists" in err.lower():
-                existing = json.loads(gh("pr", "list", "--head", branch, "--state", "all", "--json", "url"))
-                url = existing[0]["url"] if existing else "(unknown)"
-                post_heartbeat(f"Heartbeat {today} UTC: PR already existed for `{branch}`: {url}")
-            else:
-                post_heartbeat(f"Heartbeat {today} UTC: gh pr create failed for `{branch}`:\n```\n{err}\n```")
-                raise
+        gh("issue", "create",
+           "--title", f"Weekly SPSE CU check — {today}",
+           "--body", body,
+           "--assignee", "adalfa")
         return 0
 
     if current != prev:
