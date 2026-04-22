@@ -142,8 +142,7 @@ def main() -> int:
            "--head", branch,
            "--title", f"Weekly SPSE CU check — {today}",
            "--body", body,
-           "--assignee", "adalfa",
-           "--reviewer", "adalfa")
+           "--assignee", "adalfa")
         return 0
 
     if current != prev:
