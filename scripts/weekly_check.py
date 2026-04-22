@@ -117,7 +117,7 @@ def main() -> int:
         STATE.write_text(json.dumps(current, indent=2) + "\n")
         git("add", str(STATE))
         git("commit", "-m", f"Weekly check {today}: " + "; ".join(deltas))
-        git("push")
+        git("push", "origin", "HEAD:main")
 
         sections = ["## Deltas detected\n"]
         if new_posts:
