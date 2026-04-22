@@ -41,7 +41,13 @@ def parse_items(xml_text: str) -> list[dict]:
 
 
 def gh(*args: str) -> str:
-    r = subprocess.run(["gh", *args], check=True, capture_output=True, text=True)
+    r = subprocess.run(["gh", *args], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise RuntimeError(
+            f"gh {' '.join(args[:3])} failed (exit {r.returncode}):\n"
+            f"stdout: {r.stdout.strip()}\n"
+            f"stderr: {r.stderr.strip()}"
+        )
     return r.stdout
 
 
