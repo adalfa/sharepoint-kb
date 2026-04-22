@@ -113,11 +113,12 @@ def main() -> int:
 
     if deltas:
         branch = f"spse-weekly-{today}"
-        open_prs = json.loads(gh("pr", "list", "--head", branch, "--state", "open", "--json", "number"))
+        all_prs = json.loads(gh("pr", "list", "--head", branch, "--state", "all", "--json", "number,url,state"))
+        open_prs = [p for p in all_prs if p["state"] == "OPEN"]
         if open_prs:
             post_heartbeat(
-                f"Heartbeat {today} UTC: deltas detected but PR already open for `{branch}`. "
-                f"Apr 2026 CU comment count: {current['apr2026_comment_count']}."
+                f"Heartbeat {today} UTC: deltas detected but PR already open for `{branch}`: "
+                f"{open_prs[0]['url']}. Apr 2026 CU comment count: {current['apr2026_comment_count']}."
             )
             return 0
         git("config", "user.email", "action@github.com")
@@ -143,12 +144,20 @@ def main() -> int:
         sections.append("\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed.")
         body = "\n".join(sections)
 
-        gh("pr", "create",
-           "--base", "main",
-           "--head", branch,
-           "--title", f"Weekly SPSE CU check — {today}",
-           "--body", body,
-           "--assignee", "adalfa")
+        try:
+            gh("pr", "create",
+               "--base", "main",
+               "--head", branch,
+               "--title", f"Weekly SPSE CU check — {today}",
+               "--body", body,
+               "--assignee", "adalfa")
+        except RuntimeError as exc:
+            if "already exists" in str(exc).lower() or "pull request" in str(exc).lower():
+                existing = json.loads(gh("pr", "list", "--head", branch, "--state", "all", "--json", "url"))
+                url = existing[0]["url"] if existing else "(unknown)"
+                post_heartbeat(f"Heartbeat {today} UTC: PR already existed for `{branch}`: {url}")
+            else:
+                raise
         return 0
 
     if current != prev:
