@@ -20,6 +20,7 @@ STATE = REPO / ".weekly-state.json"
 UA = "Mozilla/5.0 (compatible; sharepoint-kb-weekly/1.0; +https://github.com/adalfa/sharepoint-kb)"
 HEARTBEAT_TITLE = "SPSE weekly heartbeat"
 APR_POST = "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download"
+KERBEROS_POST = "https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026"
 
 
 def fetch(url: str) -> str:
@@ -80,6 +81,8 @@ def main() -> int:
         newest = feed[0] if feed else None
         apr_comment_items = parse_items(fetch(APR_POST + "/feed/"))
         apr_comments = len(apr_comment_items)
+        kerberos_comment_items = parse_items(fetch(KERBEROS_POST + "/feed/"))
+        kerberos_comments = len(kerberos_comment_items)
     except Exception as exc:
         post_heartbeat(f"Heartbeat {today} UTC: fetch error — {type(exc).__name__}: {exc}")
         return 0
@@ -90,11 +93,13 @@ def main() -> int:
         "newest_post_title": newest["title"] if newest else "",
         "newest_post_pubDate": newest["pubDate"] if newest else "",
         "apr2026_comment_count": apr_comments,
+        "kerberos_comment_count": kerberos_comments,
     }
 
     deltas = []
     new_posts: list[dict] = []
     new_comments: list[dict] = []
+    new_kerberos_comments: list[dict] = []
 
     if prev:
         if current["newest_post_link"] != prev.get("newest_post_link"):
@@ -110,6 +115,10 @@ def main() -> int:
             n = current["apr2026_comment_count"] - (prev.get("apr2026_comment_count") or 0)
             new_comments = apr_comment_items[:max(n, 0)]
             deltas.append(f"Apr 2026 CU comment count: {prev.get('apr2026_comment_count')} → {current['apr2026_comment_count']}")
+        if current["kerberos_comment_count"] != prev.get("kerberos_comment_count"):
+            n = current["kerberos_comment_count"] - (prev.get("kerberos_comment_count") or 0)
+            new_kerberos_comments = kerberos_comment_items[:max(n, 0)]
+            deltas.append(f"Kerberos post comment count: {prev.get('kerberos_comment_count')} → {current['kerberos_comment_count']}")
 
     if deltas:
         git("config", "user.email", "action@github.com")
@@ -129,7 +138,12 @@ def main() -> int:
             sections.append(f"\n### Apr 2026 CU — new comments ({prev_count} → {current['apr2026_comment_count']})\n\n{APR_POST}\n")
             for c in new_comments:
                 sections.append(f"- **{c['title']}** — {c['pubDate']}\n  {c['link']}")
-        if not new_posts and not new_comments:
+        if new_kerberos_comments:
+            prev_count = prev.get("kerberos_comment_count", 0)
+            sections.append(f"\n### Kerberos trending issue — new comments ({prev_count} → {current['kerberos_comment_count']})\n\n{KERBEROS_POST}\n")
+            for c in new_kerberos_comments:
+                sections.append(f"- **{c['title']}** — {c['pubDate']}\n  {c['link']}")
+        if not new_posts and not new_comments and not new_kerberos_comments:
             sections.extend(f"- {d}" for d in deltas)
         sections.append("\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed.")
         body = "\n".join(sections)
@@ -151,7 +165,8 @@ def main() -> int:
     post_heartbeat(
         f"Heartbeat {today} UTC: no change. "
         f"Newest post: {current['newest_post_title']} ({current['newest_post_pubDate']}). "
-        f"Apr 2026 CU comment count: {current['apr2026_comment_count']}."
+        f"Apr 2026 CU comment count: {current['apr2026_comment_count']}. "
+        f"Kerberos post comment count: {current['kerberos_comment_count']}."
     )
     return 0
 

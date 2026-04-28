@@ -19,12 +19,32 @@
       "fixes": [
         "Complete fix for Jan→Mar 2026 CU psconfig upgrade failure (SAFE_NOTIFICATION_DATA)"
       ],
-      "known_issues": [],
+      "known_issues": [
+        {
+          "id": "I-18",
+          "component": "Kerberos / Active Directory / Windows Update",
+          "severity": "high",
+          "summary": "Kerberos authentication failures in SharePoint (and other apps) after April 14, 2026 Windows Update (CVE-2026-20833 hardening). Windows KDC no longer falls back to RC4 encryption. SharePoint service/app-pool accounts without AES flags in AD cause SSPI negotiation failures.",
+          "error_signatures": [
+            "System.ServiceModel.Security.SecurityNegotiationException: A call to SSPI failed",
+            "System.Security.Authentication.AuthenticationException: A call to SSPI failed",
+            "System.ComponentModel.Win32Exception: The encryption type requested is not supported by the KDC"
+          ],
+          "introduced_in": "external — Windows April 2026 Update (CVE-2026-20833), not a SPSE CU regression",
+          "fixed_in": null,
+          "workaround": "Enable 'AES 128 bit' and 'AES 256 bit encryption' on every SharePoint service and app-pool account in AD Users and Computers (Account tab → Account Options). Run iisreset and restart affected SharePoint services. Reference: KB 5073381.",
+          "source_urls": [
+            "https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026/",
+            "https://support.microsoft.com/en-us/kb/5073381"
+          ]
+        }
+      ],
       "prerequisites": [
         "If coming from Sep 2025 CU: run Fix-SeptemberCU-Permission-Problem.ps1 or remove NT Authority\\system from WSS_WPG and IIS_IUSRS first"
       ],
       "sources": [
         "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026/",
         "https://support.microsoft.com/en-us/kb/5002853",
         "https://www.microsoft.com/en-us/download/details.aspx?id=108607"
       ]
