@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-18",
+  "generated": "2026-04-29",
   "product": "SharePoint Server Subscription Edition",
   "current_recommendation": {
     "cu": "2026-04",
@@ -32,10 +32,11 @@
           ],
           "introduced_in": "external — Windows April 2026 Update (CVE-2026-20833), not a SPSE CU regression",
           "fixed_in": null,
-          "workaround": "Enable 'AES 128 bit' and 'AES 256 bit encryption' on every SharePoint service and app-pool account in AD Users and Computers (Account tab → Account Options). Run iisreset and restart affected SharePoint services. Reference: KB 5073381.",
+          "workaround": "Enable 'AES 128 bit' and 'AES 256 bit encryption' on every SharePoint service and app-pool account in AD Users and Computers (Account tab → Account Options). Run iisreset and restart affected SharePoint services. Reference: KB 5073381. MS Learn config guide: https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption",
           "source_urls": [
             "https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026/",
-            "https://support.microsoft.com/en-us/kb/5073381"
+            "https://support.microsoft.com/en-us/kb/5073381",
+            "https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption"
           ]
         }
       ],

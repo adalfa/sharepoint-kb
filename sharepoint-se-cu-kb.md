@@ -1,7 +1,7 @@
 # SharePoint Server Subscription Edition — CU Knowledge Base
 
 **Coverage:** July 2025 CU → April 2026 CU
-**Generated:** 2026-04-18
+**Generated:** 2026-04-29
 **Sources:** Stefan Goßner's blog (blog.stefan-gossner.com), Microsoft Support KB articles, Microsoft Download Center.
 
 ---
@@ -68,6 +68,7 @@ Reasons:
 - **Sources:**
   - https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/
   - Trending issue (Kerberos): https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026/
+  - MS Learn (Kerberos AES config): https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption
   - KB: https://support.microsoft.com/en-us/kb/5002853
   - Download: https://www.microsoft.com/en-us/download/details.aspx?id=108607
 
@@ -186,7 +187,7 @@ Reasons:
 | I-14 | Worker process | w3wp crash `0xC06D007E` / `0xE0434352` (KERNELBASE race) | High | Sep 2025 CU | Feb 2026 CU | None effective; apply Feb 2026 CU |
 | I-15 | Modern UI | Text web part read-only while "Text and table formatting" pane open | Medium | Jan 2026 CU | *Not yet fixed at 2026-04-18* — monitor | Close formatting pane before editing text |
 | I-16 | Upgrade / DB | `Invalid column name 'SAFE_NOTIFICATION_DATA'` when psconfig upgrades Jan 2026 schema to Mar 2026 CU | Critical (blocks upgrade) | Mar 2026 CU | Apr 2026 CU (complete fix) | Install Feb 2026 CU **first**, run Config Wizard, *then* Mar/Apr 2026 CU; or open MS support ticket if already broken |
-| I-18 | Kerberos / AD / Windows Update | **Kerberos authentication failures after April 2026 Windows Update (CVE-2026-20833).** April 14, 2026 Windows Update removes RC4 fallback from KDC. SharePoint service/app-pool accounts without AES encryption flags in AD cannot complete Kerberos handshake. ULS errors: `A call to SSPI failed` / `The encryption type requested is not supported by the KDC`. Affects Central Admin access, Search Admin, User Profile Sync, and other service applications. Not a SPSE CU regression — caused by OS-level security hardening. | High | Windows Apr 2026 Update (external) | N/A — fix is in AD | Enable "AES 128 bit" and "AES 256 bit encryption" on every SharePoint service and app-pool account in AD Users and Computers → Account tab → Account Options. Then run `iisreset` and restart affected services. Ref: KB 5073381, CVE-2026-20833. |
+| I-18 | Kerberos / AD / Windows Update | **Kerberos authentication failures after April 2026 Windows Update (CVE-2026-20833).** April 14, 2026 Windows Update removes RC4 fallback from KDC. SharePoint service/app-pool accounts without AES encryption flags in AD cannot complete Kerberos handshake. ULS errors: `A call to SSPI failed` / `The encryption type requested is not supported by the KDC`. Affects Central Admin access, Search Admin, User Profile Sync, and other service applications. Not a SPSE CU regression — caused by OS-level security hardening. | High | Windows Apr 2026 Update (external) | N/A — fix is in AD | Enable "AES 128 bit" and "AES 256 bit encryption" on every SharePoint service and app-pool account in AD Users and Computers → Account tab → Account Options. Then run `iisreset` and restart affected services. Ref: KB 5073381, CVE-2026-20833. MS Learn: [SharePoint Kerberos AES config](https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption). |
 | I-17 | Search / Timer Jobs | **QueryLogJobDefinition SQL connection pool exhaustion** — `QueryLogJobDefinition` fails with Event 6399: *"Timeout expired. The timeout period elapsed prior to obtaining a connection from the pool"*. Timer job leaks SQL connections on every run; pool (max 100) fills up after a few days causing cascading timer job failures. ULS signature: `QueryLogProcessor: AssignDocIdsToResults error: The method 'EndExecuteReader' cannot be called`. **Still present after Mar 2026 CU (KB5002843) and Apr 2026 CU (KB5002853) — no official fix published as of Apr 2026.** Microsoft confirmed investigating but no KB article or fix released. | High | Mar 2025 CU (regression) | **Not fixed — open as of Apr 2026** | (1) Disable the **Query Logging Timer Job** in Central Admin (most effective). (2) Schedule a nightly restart of `SPTimerV4` to clear the pool every 48–72 hrs. (3) Increase SQL pool size as short-term delay: add `Max Pool Size=200` to the Search connection string. Sources: [Oct 2025 Q&A](https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2) · [Mar 2026 Q&A #1](https://learn.microsoft.com/en-us/answers/questions/5816641/querylogjobdefinition-may-be-exhausting-the-sql-co) · [Mar 2026 Q&A #2](https://learn.microsoft.com/en-us/answers/questions/5849106/search-service-sql-connection-pool-exhaustion-afte) |
 
 ---
@@ -244,6 +245,7 @@ Reasons:
 | spse-2026-03-cu | https://blog.stefan-gossner.com/2026/03/10/march-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/ |
 | spse-2026-04-cu | https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/ |
 | kerberos-apr2026 | https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026/ |
+| mslearn-kerberos-aes-sp | https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption |
 | sep2025-issue-summary | https://blog.stefan-gossner.com/2025/09/25/summary-and-status-of-issues-identified-with-september-2025-cu-for-sharepoint/ |
 | mar2026-psconfig-issue | https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/ |
 | mslearn-critical-events-july2025 | https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2 |
