@@ -8,6 +8,7 @@ Stefan Gossner's blog via RSS, compares against a small state file, and:
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import urllib.request
@@ -21,6 +22,12 @@ UA = "Mozilla/5.0 (compatible; sharepoint-kb-weekly/1.0; +https://github.com/ada
 HEARTBEAT_TITLE = "SPSE weekly heartbeat"
 APR_POST = "https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download"
 KERBEROS_POST = "https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026"
+I17_MSQA_URL = "https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2"
+
+
+def count_msqa_answers(html: str) -> int:
+    m = re.search(r'(\d+)\s+answer', html, re.IGNORECASE)
+    return int(m.group(1)) if m else 0
 
 
 def fetch(url: str) -> str:
@@ -83,6 +90,7 @@ def main() -> int:
         apr_comments = len(apr_comment_items)
         kerberos_comment_items = parse_items(fetch(KERBEROS_POST + "/feed/"))
         kerberos_comments = len(kerberos_comment_items)
+        i17_msqa_answers = count_msqa_answers(fetch(I17_MSQA_URL))
     except Exception as exc:
         post_heartbeat(f"Heartbeat {today} UTC: fetch error — {type(exc).__name__}: {exc}")
         return 0
@@ -94,12 +102,14 @@ def main() -> int:
         "newest_post_pubDate": newest["pubDate"] if newest else "",
         "apr2026_comment_count": apr_comments,
         "kerberos_comment_count": kerberos_comments,
+        "i17_msqa_answer_count": i17_msqa_answers,
     }
 
     deltas = []
     new_posts: list[dict] = []
     new_comments: list[dict] = []
     new_kerberos_comments: list[dict] = []
+    new_i17_answers = False
 
     if prev:
         if current["newest_post_link"] != prev.get("newest_post_link"):
@@ -119,6 +129,9 @@ def main() -> int:
             n = current["kerberos_comment_count"] - (prev.get("kerberos_comment_count") or 0)
             new_kerberos_comments = kerberos_comment_items[:max(n, 0)]
             deltas.append(f"Kerberos post comment count: {prev.get('kerberos_comment_count')} → {current['kerberos_comment_count']}")
+        if current["i17_msqa_answer_count"] != prev.get("i17_msqa_answer_count"):
+            new_i17_answers = True
+            deltas.append(f"I-17 MS Q&A answer count: {prev.get('i17_msqa_answer_count')} → {current['i17_msqa_answer_count']}")
 
     if deltas:
         git("config", "user.email", "action@github.com")
@@ -143,7 +156,10 @@ def main() -> int:
             sections.append(f"\n### Kerberos trending issue — new comments ({prev_count} → {current['kerberos_comment_count']})\n\n{KERBEROS_POST}\n")
             for c in new_kerberos_comments:
                 sections.append(f"- **{c['title']}** — {c['pubDate']}\n  {c['link']}")
-        if not new_posts and not new_comments and not new_kerberos_comments:
+        if new_i17_answers:
+            prev_count = prev.get("i17_msqa_answer_count", 0)
+            sections.append(f"\n### I-17 MS Q&A thread — new activity ({prev_count} → {current['i17_msqa_answer_count']} answers)\n\n{I17_MSQA_URL}\n")
+        if not new_posts and not new_comments and not new_kerberos_comments and not new_i17_answers:
             sections.extend(f"- {d}" for d in deltas)
         sections.append("\nReview and extend `sharepoint-se-cu-kb.md` / `.json` as needed.")
         body = "\n".join(sections)
@@ -166,7 +182,8 @@ def main() -> int:
         f"Heartbeat {today} UTC: no change. "
         f"Newest post: {current['newest_post_title']} ({current['newest_post_pubDate']}). "
         f"Apr 2026 CU comment count: {current['apr2026_comment_count']}. "
-        f"Kerberos post comment count: {current['kerberos_comment_count']}."
+        f"Kerberos post comment count: {current['kerberos_comment_count']}. "
+        f"I-17 MS Q&A answer count: {current['i17_msqa_answer_count']}."
     )
     return 0
 
