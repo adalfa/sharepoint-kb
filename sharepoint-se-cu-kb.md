@@ -1,7 +1,7 @@
 # SharePoint Server Subscription Edition — CU Knowledge Base
 
-**Coverage:** July 2025 CU → April 2026 CU
-**Generated:** 2026-04-29
+**Coverage:** July 2025 CU → May 2026 CU
+**Generated:** 2026-05-18
 **Sources:** Stefan Goßner's blog (blog.stefan-gossner.com), Microsoft Support KB articles, Microsoft Download Center.
 
 ---
@@ -26,6 +26,7 @@
 
 | CU | Release | Build (16.0.x.y) | KB | Also security? |
 |---|---|---|---|---|
+| **May 2026** | 2026-05-12 | 16.0.19725.20280 | KB5002863 | Yes |
 | **Apr 2026** | 2026-04-14 | 16.0.19725.20210 | KB5002853 | Yes |
 | Mar 2026 | 2026-03-10 | 16.0.19127.20xxx¹ | KB5002843 | Yes — **CAUTION** |
 | Feb 2026 | 2026-02-10 | 16.0.19127.20518 | KB5002833 | Yes |
@@ -41,14 +42,15 @@
 
 ---
 
-## 3. Current recommendation (as of 2026-04-18)
+## 3. Current recommendation (as of 2026-05-18)
 
-**Target: April 2026 CU (KB5002853, build 16.0.19725.20210).**
+**Target: May 2026 CU (KB5002863, build 16.0.19725.20280).**
 
 Reasons:
-1. Supersedes the **March 2026 CU `SAFE_NOTIFICATION_DATA` psconfig-fail** regression — Apr 2026 is the first CU with a **complete fix** for the Jan→Mar upgrade break.
-2. Supersedes every resolved September-2025-CU side-effect (solution deployment fail, SP2010 workflows, classic WFM, SPAdminV4 on WS2025, Secure Store group-claim validation, w3wp 0xC0000409 / 0xC06D007E crashes, Text web part read-only — see Section 5).
-3. Every monthly CU since Aug 2025 is also a security update; skipping CUs leaves CVEs unpatched.
+1. Patches two **Critical RCE** CVEs (CVE-2026-40365, CVE-2026-40367) plus four Important RCEs affecting SharePoint 2016/2019/SE — the most significant security payload since the ToolShell CUs.
+2. Clean CU — Stefan posted no caution banner and no trending-issue posts for May 2026; no regressions identified at time of writing (2026-05-18).
+3. Supersedes April 2026 CU and carries forward the complete fix for the Jan→Mar `SAFE_NOTIFICATION_DATA` upgrade regression.
+4. Every monthly CU since Aug 2025 is also a security update; skipping CUs leaves CVEs unpatched.
 
 **Prerequisites when the source farm is Sep 2025 CU:** run
 [`Fix-SeptemberCU-Permission-Problem.ps1`](https://aka.ms/stefangossner/Fix-SeptemberCU-Permission-Problem.ps1)
@@ -59,6 +61,18 @@ Reasons:
 ---
 
 ## 4. Per-CU details (newest first)
+
+### May 2026 CU — KB5002863 — build 16.0.19725.20280 — 2026-05-12
+- **Verdict (Stefan):** recommended — no caution banner; no trending-issue posts published as of 2026-05-18.
+- **Highlights:** Monthly security rollup. Patches **two Critical RCE CVEs** (CVE-2026-40365, CVE-2026-40367) and four Important RCEs (CVE-2026-33110, CVE-2026-33112, CVE-2026-35439, CVE-2026-40357) across SharePoint 2016/2019/SE.
+- **Known issues introduced:** none identified at time of writing.
+- **I-15 / I-17 status:** Text web part read-only regression (I-15) and QueryLogJobDefinition SQL pool exhaustion (I-17) are **still open** — not fixed in this CU.
+- **Prereq:** if farm is still on Sep 2025 CU, apply `Fix-SeptemberCU-Permission-Problem.ps1` first. Farms on Jul 2025 CU (or later) can upgrade directly to May 2026 CU (confirmed by Stefan in post comments).
+- **Sources:**
+  - https://blog.stefan-gossner.com/2026/05/12/may-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/
+  - https://blog.stefan-gossner.com/2026/05/12/sharepoint-security-fixes-released-with-may-2026-pu-and-offered-through-microsoft-update/
+  - KB: https://support.microsoft.com/en-us/kb/5002863
+  - Download: https://www.microsoft.com/en-us/download/details.aspx?id=108655
 
 ### April 2026 CU — KB5002853 — build 16.0.19725.20210 — 2026-04-14
 - **Verdict (Stefan):** recommended.
@@ -185,29 +199,30 @@ Reasons:
 | I-12 | Secure Store | Group claim validation fails; stored creds can't be decrypted (new encryption algo) | High | Sep 2025 CU | Mar 2026 CU | Re-enter credentials / re-create target applications |
 | I-13 | Worker process | w3wp crash `0xC0000409` in `owssvr.dll` | High | Sep 2025 CU | Feb 2026 CU | None effective; apply Feb 2026 CU |
 | I-14 | Worker process | w3wp crash `0xC06D007E` / `0xE0434352` (KERNELBASE race) | High | Sep 2025 CU | Feb 2026 CU | None effective; apply Feb 2026 CU |
-| I-15 | Modern UI | Text web part read-only while "Text and table formatting" pane open | Medium | Jan 2026 CU | *Not yet fixed at 2026-04-18* — monitor | Close formatting pane before editing text |
+| I-15 | Modern UI | Text web part read-only while "Text and table formatting" pane open | Medium | Jan 2026 CU | *Not yet fixed at 2026-05-18* — monitor | Close formatting pane before editing text |
 | I-16 | Upgrade / DB | `Invalid column name 'SAFE_NOTIFICATION_DATA'` when psconfig upgrades Jan 2026 schema to Mar 2026 CU | Critical (blocks upgrade) | Mar 2026 CU | Apr 2026 CU (complete fix) | Install Feb 2026 CU **first**, run Config Wizard, *then* Mar/Apr 2026 CU; or open MS support ticket if already broken |
 | I-18 | Kerberos / AD / Windows Update | **Kerberos authentication failures after April 2026 Windows Update (CVE-2026-20833).** April 14, 2026 Windows Update removes RC4 fallback from KDC. SharePoint service/app-pool accounts without AES encryption flags in AD cannot complete Kerberos handshake. ULS errors: `A call to SSPI failed` / `The encryption type requested is not supported by the KDC`. Affects Central Admin access, Search Admin, User Profile Sync, and other service applications. Not a SPSE CU regression — caused by OS-level security hardening. | High | Windows Apr 2026 Update (external) | N/A — fix is in AD | Enable "AES 128 bit" and "AES 256 bit encryption" on every SharePoint service and app-pool account in AD Users and Computers → Account tab → Account Options. Then run `iisreset` and restart affected services. Ref: KB 5073381, CVE-2026-20833. MS Learn: [SharePoint Kerberos AES config](https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption). |
-| I-17 | Search / Timer Jobs | **QueryLogJobDefinition SQL connection pool exhaustion** — `QueryLogJobDefinition` fails with Event 6399: *"Timeout expired. The timeout period elapsed prior to obtaining a connection from the pool"*. Timer job leaks SQL connections on every run; pool (max 100) fills up after a few days causing cascading timer job failures. ULS signature: `QueryLogProcessor: AssignDocIdsToResults error: The method 'EndExecuteReader' cannot be called`. **Still present after Mar 2026 CU (KB5002843) and Apr 2026 CU (KB5002853) — no official fix published as of Apr 2026.** Microsoft confirmed investigating but no KB article or fix released. | High | Mar 2025 CU (regression) | **Not fixed — open as of Apr 2026** | (1) Disable the **Query Logging Timer Job** in Central Admin (most effective). (2) Schedule a nightly restart of `SPTimerV4` to clear the pool every 48–72 hrs. (3) Increase SQL pool size as short-term delay: add `Max Pool Size=200` to the Search connection string. Sources: [Oct 2025 Q&A](https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2) · [Mar 2026 Q&A #1](https://learn.microsoft.com/en-us/answers/questions/5816641/querylogjobdefinition-may-be-exhausting-the-sql-co) · [Mar 2026 Q&A #2](https://learn.microsoft.com/en-us/answers/questions/5849106/search-service-sql-connection-pool-exhaustion-afte) |
+| I-17 | Search / Timer Jobs | **QueryLogJobDefinition SQL connection pool exhaustion** — `QueryLogJobDefinition` fails with Event 6399: *"Timeout expired. The timeout period elapsed prior to obtaining a connection from the pool"*. Timer job leaks SQL connections on every run; pool (max 100) fills up after a few days causing cascading timer job failures. ULS signature: `QueryLogProcessor: AssignDocIdsToResults error: The method 'EndExecuteReader' cannot be called`. **Still present after Mar 2026 CU (KB5002843), Apr 2026 CU (KB5002853), and May 2026 CU (KB5002863) — no official fix published as of May 2026.** Microsoft confirmed investigating but no KB article or fix released. | High | Mar 2025 CU (regression) | **Not fixed — open as of Apr 2026** | (1) Disable the **Query Logging Timer Job** in Central Admin (most effective). (2) Schedule a nightly restart of `SPTimerV4` to clear the pool every 48–72 hrs. (3) Increase SQL pool size as short-term delay: add `Max Pool Size=200` to the Search connection string. Sources: [Oct 2025 Q&A](https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2) · [Mar 2026 Q&A #1](https://learn.microsoft.com/en-us/answers/questions/5816641/querylogjobdefinition-may-be-exhausting-the-sql-co) · [Mar 2026 Q&A #2](https://learn.microsoft.com/en-us/answers/questions/5849106/search-service-sql-connection-pool-exhaustion-afte) |
 
 ---
 
-## 6. Upgrade matrix (recommended paths → latest = April 2026 CU)
+## 6. Upgrade matrix (recommended paths → latest = May 2026 CU)
 
-| From | Recommended path to Apr 2026 CU | Intermediate stops | Rationale / blockers |
+| From | Recommended path to May 2026 CU | Intermediate stops | Rationale / blockers |
 |---|---|---|---|
-| **≤ Jun 2025 CU** (pre-ToolShell) | Jun → Apr 2026 CU directly | None technically required | You skip all Sep 2025 CU regressions because you never installed Sep 2025 CU. Verify BDC LobSystem deprecation impact (I-03). Rotate machine keys + hunt for `spinstall0.aspx` before patching. |
-| **Jul 2025 CU** | Jul → Apr 2026 CU directly | None | Same as above; you cleanly jump over the Sep 2025 perm regression. Run `Test-DefenderAndAmsiWorkProperly` post-install. |
-| **Aug 2025 CU** | Aug → Apr 2026 CU directly | None | Clean path; never touched the Sep 2025 perm damage. |
-| **Sep 2025 CU** (on Windows Server 2022) | **Remediate → Apr 2026 CU** | *Must* run `Fix-SeptemberCU-Permission-Problem.ps1` OR remove `NT Authority\system` from `WSS_WPG`/`IIS_IUSRS` before installing any CU | Without remediation the CU install fails silently (I-06). Also update SPWFM to Aug 2025 SPWFM CU or later (I-04). |
-| **Sep 2025 CU** (on Windows Server 2025) | Remediate perms → Apr 2026 CU | Same as above plus pick up SPAdminV4 WS2025 fix (shipped Mar 2026 CU) | SPAdminV4 stays broken until Mar 2026 CU is applied (I-07); Apr 2026 CU carries that fix. |
-| **Oct 2025 CU** | Oct → Apr 2026 CU directly | None | No blockers. |
-| **Nov 2025 CU** | Nov → Apr 2026 CU directly | None | |
-| **Dec 2025 CU** | Dec → Apr 2026 CU directly | None | Carries w3wp 0xC0000409 / 0xC06D007E risk until installed (I-13, I-14); expedite. |
-| **Jan 2026 CU** | Jan → **Feb 2026 CU** (run Config Wizard) → Apr 2026 CU | **Feb 2026 CU mandatory** | Skipping Feb causes the `SAFE_NOTIFICATION_DATA` upgrade failure (I-16). Alt: Jan → Apr 2026 CU directly is also safe (the complete fix ships in Apr 2026 CU), but Stefan's documented workaround is via Feb. |
-| **Feb 2026 CU** | Feb → Apr 2026 CU directly | None | |
-| **Mar 2026 CU (successful install from Feb 2026 CU)** | Mar → Apr 2026 CU directly | None | |
+| **≤ Jun 2025 CU** (pre-ToolShell) | Jun → May 2026 CU directly | None technically required | You skip all Sep 2025 CU regressions because you never installed Sep 2025 CU. Verify BDC LobSystem deprecation impact (I-03). Rotate machine keys + hunt for `spinstall0.aspx` before patching. |
+| **Jul 2025 CU** | Jul → May 2026 CU directly | None | Confirmed by Stefan in May 2026 CU comments. Cleanly jumps over the Sep 2025 perm regression. Run `Test-DefenderAndAmsiWorkProperly` post-install. |
+| **Aug 2025 CU** | Aug → May 2026 CU directly | None | Clean path; never touched the Sep 2025 perm damage. |
+| **Sep 2025 CU** (on Windows Server 2022) | **Remediate → May 2026 CU** | *Must* run `Fix-SeptemberCU-Permission-Problem.ps1` OR remove `NT Authority\system` from `WSS_WPG`/`IIS_IUSRS` before installing any CU | Without remediation the CU install fails silently (I-06). Also update SPWFM to Aug 2025 SPWFM CU or later (I-04). |
+| **Sep 2025 CU** (on Windows Server 2025) | Remediate perms → May 2026 CU | Same as above plus pick up SPAdminV4 WS2025 fix (shipped Mar 2026 CU) | SPAdminV4 stays broken until Mar 2026 CU is applied (I-07); May 2026 CU carries that fix. |
+| **Oct 2025 CU** | Oct → May 2026 CU directly | None | No blockers. |
+| **Nov 2025 CU** | Nov → May 2026 CU directly | None | |
+| **Dec 2025 CU** | Dec → May 2026 CU directly | None | Carries w3wp 0xC0000409 / 0xC06D007E risk until installed (I-13, I-14); expedite. |
+| **Jan 2026 CU** | Jan → **Feb 2026 CU** (run Config Wizard) → May 2026 CU | **Feb 2026 CU mandatory** | Skipping Feb causes the `SAFE_NOTIFICATION_DATA` upgrade failure (I-16). Apr/May 2026 CU also contain the complete fix, but Stefan's documented workaround is via Feb first. |
+| **Feb 2026 CU** | Feb → May 2026 CU directly | None | |
+| **Mar 2026 CU (successful install from Feb 2026 CU)** | Mar → May 2026 CU directly | None | |
 | **Mar 2026 CU (installed on top of Jan 2026 CU — farm broken)** | Open Microsoft Support ticket | MS engineering has a documented remediation | Do not attempt self-repair of the schema. |
+| **Apr 2026 CU** | Apr → May 2026 CU directly | None | Recommended: patches two Critical RCEs. |
 
 ### General SPSE patching procedure (all paths)
 
@@ -228,7 +243,7 @@ Reasons:
 - Deprecations (SP2010 workflows EoS 2026-07-14): https://learn.microsoft.com/en-us/sharepoint/what-s-new/what-s-deprecated-or-removed-from-sharepoint-server-subscription-edition#sharepoint-2010-workflows
 - Office Online Server retirement: 2026-12-31 (announced Oct 2025).
 
-## 8. Source log (fetch date: 2026-04-18)
+## 8. Source log (fetch date: 2026-05-18)
 
 | Label | URL |
 |---|---|
@@ -246,6 +261,8 @@ Reasons:
 | spse-2026-04-cu | https://blog.stefan-gossner.com/2026/04/14/april-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/ |
 | kerberos-apr2026 | https://blog.stefan-gossner.com/2026/04/23/trending-issues-kerberos-failures-in-sharepoint-and-other-applications-starting-april-2026/ |
 | mslearn-kerberos-aes-sp | https://learn.microsoft.com/en-us/troubleshoot/sharepoint/security/configuration-to-support-kerberos-aes-encryption |
+| spse-2026-05-cu | https://blog.stefan-gossner.com/2026/05/12/may-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/ |
+| spse-2026-05-pu | https://blog.stefan-gossner.com/2026/05/12/sharepoint-security-fixes-released-with-may-2026-pu-and-offered-through-microsoft-update/ |
 | sep2025-issue-summary | https://blog.stefan-gossner.com/2025/09/25/summary-and-status-of-issues-identified-with-september-2025-cu-for-sharepoint/ |
 | mar2026-psconfig-issue | https://blog.stefan-gossner.com/2026/03/12/trending-issue-spse-configuration-wizard-will-fail-for-upgrades-from-january-2026-cu-to-march-2026-cu/ |
 | mslearn-critical-events-july2025 | https://learn.microsoft.com/en-us/answers/questions/5583482/many-critical-events-in-sharepoint-se-after-july-2 |
