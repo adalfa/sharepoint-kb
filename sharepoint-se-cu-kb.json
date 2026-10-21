@@ -1,22 +1,21 @@
 {
-  "generated": "2026-09-29",
+  "generated": "2026-10-21",
   "product": "SharePoint Server Subscription Edition",
   "current_recommendation": {
-    "cu": "2026-09",
-    "build": "16.0.20326.20136",
-    "kb": "KB5002908",
-    "alternative": {
-      "kb": "KB5002927",
-      "build": "16.0.20326.20158",
-      "when": "use instead if you rely on SP2010 workflows or InfoPath forms; run InfoPath script (I-27) before Config Wizard"
-    },
-    "reason": "Latest monthly security rollup; cumulative. Most behaviour-changing CU of the window: SP2010 workflows, InfoPath Forms Services and ToolPane disabled by default; event receivers on old assembly versions break (I-35). Install only after pre-flight: Enable-SPLegacyWorkflow/Enable-SPWorkflow2013 per site collection, Enable-SPToolPane, pre-seed AllowedDLCAssemblies/BCSAllowedTypeNames/SPAllowedOutboundHosts, inventory event receivers, do not change DCache roles, re-check workflow authorizedTypes, verify installed build. CORRECTION: Sep 2026 CU does NOT contain the Distributed Cache fix (I-23). I-15 was fixed in Jun 2026 CU.",
+    "cu": "2026-10",
+    "build": "16.0.20326.20190",
+    "kb": "KB5002927",
+    "alternative": null,
+    "reason": "Latest monthly security rollup + 26H2 feature update. Cumulative: Sep can be skipped. Contains code fix for Sep-CU subsite-creation regression (I-35, per Stefan 2026-10-15; reader-untested). New reports: I-44 workflow rules validator (workaround ServerDebugFlags 60751), I-45 HTML encoding, I-46, I-47. SP2013 workflows NOT disabled in Oct CU. I-23 DCache fix unconfirmed. KB5002927 was also reused for the unrelated Sep COD hotfix (build .20158, no KB) - verify by build number.",
     "open_issues": [
       "I-17",
       "I-23",
       "I-33",
       "I-43",
-      "I-42"
+      "I-42",
+      "I-44",
+      "I-45",
+      "I-47"
     ],
     "preflight": [
       "Enable-SPLegacyWorkflow / Enable-SPWorkflow2013 per site collection (Aug CU+ cmdlets)",
@@ -26,10 +25,87 @@
       "No DCache role change during patching",
       "web.config authorizedTypes intact (I-20)",
       "Verify build 16.0.20326.20136 / .20158",
-      "WSS_Logging out of Always On AG during PSConfig"
+      "WSS_Logging out of Always On AG during PSConfig",
+      "Repair v14/v15 event receivers incl. content types and docid_customProvider_assembly (I-35, I-25)",
+      "Keep v14 workflow authorizedTypes (add lines, never edit versions) (I-20/I-44)",
+      "If OOB Page Approval blocked after Oct: ServerDebugFlags.Add(60751) (I-44)",
+      "Workflow Manager: client 16.0.20326.20190 on all SP+WFM servers; WorkflowServiceAllowedOutboundHosts (I-47)",
+      "Stop processes holding SharePoint DLLs before install (hr=80070005)"
     ]
   },
   "cus": [
+    {
+      "id": "2026-10",
+      "release_date": "2026-10-14",
+      "build": "16.0.20326.20190",
+      "kb": [
+        "KB5002927"
+      ],
+      "stefan_verdict": "recommended_with_caveats",
+      "security_update": true,
+      "features": [
+        "Feature Update 26H2",
+        "AMSI Body Scan defaults to Full mode (Standard ring)",
+        "Config to exclude Everyone claim in People Picker (Standard ring)",
+        "Opt-in People Picker search throttling (Early ring)"
+      ],
+      "fixes": [
+        "Sep 2026 CU subsite/publishing-web creation failure on SP2013-provisioned sites with stale v15 event receivers (I-35; Stefan 2026-10-15, code change; reader-untested)"
+      ],
+      "not_included": [
+        "SP2013 workflow disablement (Stefan source check 2026-10-15)",
+        "Confirmed Distributed Cache fix (I-23) - no statement"
+      ],
+      "notes": [
+        "KB5002927 also appears on the Sep COD hotfix Download Center entry (build 16.0.20326.20158, no KB article); different package",
+        "OOS Oct CU build 16.0.10417.20228 (KB5002928)",
+        "SPWFM Oct CU KB5002926, client 16.0.20326.20190",
+        "PU post lists ~90 CVEs, 14 Critical after 2026-10-19 regeneration; CVE-2026-108452 added as informational revision"
+      ],
+      "known_issues": [
+        {
+          "id": "I-44",
+          "component": "Legacy workflows / validator",
+          "severity": "high",
+          "summary": "SPDeclarativeWorkflowRulesValidator blocks ROOT.rules (WorkflowCodeTypeReferenceExpression unresolved): OOB Page Approval and event-driven workflows fail to start",
+          "introduced_in": "2026-10",
+          "fixed_in": null,
+          "workaround": "ServerDebugFlags.Add(60751) (Stefan/engineering 2026-10-20); temporary, may be removed"
+        },
+        {
+          "id": "I-45",
+          "component": "Text fields / encoding",
+          "severity": "medium",
+          "summary": "Special characters in HTML multi-line text fields stored encoded ({\" -> &#123;&quot;) after Oct CU; single reporter, MS case open",
+          "introduced_in": "2026-10",
+          "fixed_in": null,
+          "workaround": "Support case"
+        },
+        {
+          "id": "I-46",
+          "component": "Patching / Health Analyzer",
+          "severity": "low",
+          "summary": "ULS \"Health rule ... not found in RuleExecutionParameters\" (Aug+Oct CU; benign per Stefan); PSConfig TypeInitializationException Microsoft.Skype.ECS.Client missing (single reporter)",
+          "introduced_in": "2026-08..10",
+          "fixed_in": null,
+          "workaround": null
+        },
+        {
+          "id": "I-47",
+          "component": "Workflow Manager",
+          "severity": "high",
+          "summary": "SPWFM Oct CU: WorkflowServiceAllowedOutboundHosts outbound policy blocks REST calls (syntax undocumented); WFM Client does not update GAC Microsoft.Workflow.Common (NdcsAllowListSerializationBinder missing); no-code sandbox solutions for SP2013 workflows broken since Aug CU",
+          "introduced_in": "2026-08..10",
+          "fixed_in": null,
+          "workaround": "Support case; verify client on all servers"
+        }
+      ],
+      "sources": [
+        "https://blog.stefan-gossner.com/2026/10/14/october-2026-cu-for-sharepoint-server-subscription-edition-is-available-for-download/",
+        "https://blog.stefan-gossner.com/2026/10/14/sharepoint-security-fixes-released-with-october-2026-pu-and-offered-through-microsoft-update/",
+        "https://blog.stefan-gossner.com/2026/10/14/feature-update-26h2-for-sharepoint-server-subscription-edition-has-been-released/"
+      ]
+    },
     {
       "id": "2026-09",
       "release_date": "2026-09-09",
@@ -48,8 +124,8 @@
           "severity": "high",
           "summary": "InfoPath Forms Services and dependent SP2010 workflows fail with rendering/compatibility errors after Sep 2026 CU",
           "introduced_in": "2026-09",
-          "fixed_in": "interim: KB5002927 (between Sep and Oct 2026 CU)",
-          "workaround": "Install KB5002927 (do not run Config Wizard yet) -> run PowerShell to set debug flag 5023 and enable browser rendering properties -> then run SharePoint Products Configuration Wizard. Publishing NEW SP2010 workflows remains permanently disabled regardless of this fix.",
+          "fixed_in": "interim: COD hotfix build 16.0.20326.20158 (no KB; Download Center reused 5002927); Oct 2026 CU still needs the same settings",
+          "workaround": "Install COD hotfix build .20158 (or Oct 2026 CU) (do not run Config Wizard yet) -> run PowerShell to set debug flag 5023 and enable browser rendering properties -> then run SharePoint Products Configuration Wizard. Stefan retracted the \"permanently disabled\" statement on 2026-09-24.",
           "source_urls": [
             "https://blog.stefan-gossner.com/2026/09/21/trending-issue-infopath-forms-issues-with-sp2010-workflows-after-september-2026-cu/"
           ]
@@ -60,7 +136,7 @@
           "severity": "high",
           "summary": "Sep 2026 CU: event receivers with old assembly versions (15.0.0.0 etc.) or custom redirects fail to load — workflows do not auto-start, subsite creation fails, 3rd-party breaks",
           "introduced_in": "2026-09",
-          "fixed_in": null,
+          "fixed_in": "2026-10 (subsite-creation symptom only; Stefan 2026-10-15; reader-untested)",
           "workaround": "Re-register receivers at Version=16.0.0.0 (community script); AllowedDLCAssemblies; unofficial ServerDebugFlags 59025"
         },
         {
@@ -76,7 +152,7 @@
           "id": "I-38",
           "component": "Legacy workflow platforms",
           "severity": "high",
-          "summary": "SP2010 workflows disabled by default with Sep 2026 CU; SP2013 workflows with Oct 2026 CU (policy)",
+          "summary": "SP2010 workflows disabled by default with Sep 2026 CU; SP2013 workflows NOT disabled in Oct 2026 CU (Stefan 2026-10-15) - timing unannounced",
           "introduced_in": "2026-08 (cmdlets)",
           "fixed_in": "n/a",
           "workaround": "Enable-SPLegacyWorkflow / Enable-SPWorkflow2013 per site collection incl. new ones; allow-list only after Sep CU"
@@ -134,7 +210,10 @@
           "Build jump 19725->20326 is not 26H2 (Stefan 2026-09-23)",
           "Get-SPLegacyWorkflowDisabledSites removed - allow-list only"
         ]
-      }
+      },
+      "notes": [
+        "Intermediate COD hotfix build 16.0.20326.20158 had no KB article; KB5002927 is the Oct 2026 CU (corrected 2026-10-21)"
+      ]
     },
     {
       "id": "2026-08",
@@ -1191,7 +1270,7 @@
       "severity": "high",
       "introduced_in": "2026-09",
       "fixed_in": "interim: KB5002927 (build 16.0.20326.20158, 2026-09-21)",
-      "workaround": "Install KB5002927 (no Config Wizard) → restart PowerShell → Stefan's script (ServerDebugFlags 5023, AllowUserFormBrowserRendering/Enabling=$true) → Config Wizard. Stefan retracted (2026-09-24) that publishing new SP2010 workflows stays disabled; no long-term promise"
+      "workaround": "Install KB5002927 (no Config Wizard) → restart PowerShell → Stefan's script (ServerDebugFlags 5023, AllowUserFormBrowserRendering/Enabling=$true) → Config Wizard. Stefan retracted (2026-09-24) that publishing new SP2010 workflows stays disabled; no long-term promise | 2026-09-30: if script ran after Config Wizard enable CA InfoPath setting \"Render form templates that are browser-enabled by users\"; check list form mappings point to InfoPath pages [2026-10-21] Hotfix build .20158 has no KB; Oct CU (KB5002927 .20190) still needs the same settings."
     },
     {
       "id": "I-28",
@@ -1262,13 +1341,13 @@
       "summary": "Sep 2026 CU: event receivers with old assembly versions (15.0.0.0 etc.) or custom redirects fail to load — workflows do not auto-start, subsite creation fails, 3rd-party breaks",
       "severity": "high",
       "introduced_in": "2026-09",
-      "fixed_in": null,
-      "workaround": "Re-register receivers at Version=16.0.0.0 (community script); AllowedDLCAssemblies; unofficial ServerDebugFlags 59025"
+      "fixed_in": "2026-10 (subsite creation only; untested)",
+      "workaround": "Re-register receivers at Version=16.0.0.0 (community script); AllowedDLCAssemblies; unofficial ServerDebugFlags 59025 | 2026-09-30: Stefan endorses Update-EventReceiverVersionTo16.ps1 (v14: old=14.0.0.0); also fixes App Catalog upload; 3rd-party DLLs need vendor rebuild"
     },
     {
       "id": "I-36",
       "component": "Editing UI",
-      "summary": "ToolPane disabled by default — web parts not editable in browser",
+      "summary": "ToolPane disabled by default — web parts not editable in browser (Stefan 2026-09-30: first step of defense-in-depth initiative, more default-off features expected)",
       "severity": "medium",
       "introduced_in": "2026-09",
       "fixed_in": "by design",
@@ -1286,7 +1365,7 @@
     {
       "id": "I-38",
       "component": "Legacy workflow platforms",
-      "summary": "SP2010 workflows disabled by default with Sep 2026 CU; SP2013 workflows with Oct 2026 CU (policy)",
+      "summary": "SP2010 workflows disabled by default with Sep 2026 CU; SP2013 workflows NOT disabled by Oct 2026 CU (Stefan 2026-10-15), date unannounced",
       "severity": "high",
       "introduced_in": "2026-08 (cmdlets)",
       "fixed_in": "n/a",
@@ -1322,7 +1401,7 @@
     {
       "id": "I-42",
       "component": "Modern UI / JSOM / misc",
-      "summary": "Single-reporter unacknowledged regressions (Yes/No calculated col, JSOM form digest, modern paging, missing Check-In, display templates, ?contents=1, custom tiles, empty nav properties, PnP 401/403)",
+      "summary": "Single-reporter unacknowledged regressions (Yes/No calculated col, JSOM form digest, modern paging, missing Check-In, display templates, ?contents=1, custom tiles, empty nav properties, PnP 401/403); Site activity web part empty after Restore/Move (Aug CU); Office 2016 cannot edit docs (Aug CU); modern upload fails (Sep CU)",
       "severity": "low",
       "introduced_in": "2026-06..09",
       "fixed_in": null,
@@ -1336,134 +1415,170 @@
       "introduced_in": "2026-06",
       "fixed_in": null,
       "workaround": "Pull WFEs/recycle pools; support case (Stefan)"
+    },
+    {
+      "id": "I-44",
+      "component": "Legacy workflows / validator",
+      "summary": "SPDeclarativeWorkflowRulesValidator blocks ROOT.rules (WorkflowCodeTypeReferenceExpression unresolved): OOB Page Approval and event-driven workflows fail to start",
+      "severity": "high",
+      "introduced_in": "2026-10",
+      "fixed_in": null,
+      "workaround": "ServerDebugFlags.Add(60751) (Stefan/engineering 2026-10-20); temporary, may be removed"
+    },
+    {
+      "id": "I-45",
+      "component": "Text fields / encoding",
+      "summary": "Special characters in HTML multi-line text fields stored encoded ({\" -> &#123;&quot;) after Oct CU; single reporter, MS case open",
+      "severity": "medium",
+      "introduced_in": "2026-10",
+      "fixed_in": null,
+      "workaround": "Support case"
+    },
+    {
+      "id": "I-46",
+      "component": "Patching / Health Analyzer",
+      "summary": "ULS \"Health rule ... not found in RuleExecutionParameters\" (Aug+Oct CU; benign per Stefan); PSConfig TypeInitializationException Microsoft.Skype.ECS.Client missing (single reporter)",
+      "severity": "low",
+      "introduced_in": "2026-08..10",
+      "fixed_in": null,
+      "workaround": null
+    },
+    {
+      "id": "I-47",
+      "component": "Workflow Manager",
+      "summary": "SPWFM Oct CU: WorkflowServiceAllowedOutboundHosts outbound policy blocks REST calls (syntax undocumented); WFM Client does not update GAC Microsoft.Workflow.Common (NdcsAllowListSerializationBinder missing); no-code sandbox solutions for SP2013 workflows broken since Aug CU",
+      "severity": "high",
+      "introduced_in": "2026-08..10",
+      "fixed_in": null,
+      "workaround": "Support case; verify client on all servers"
     }
   ],
   "upgrade_matrix": [
     {
       "from": "<=2025-06",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Skips all Sep 2025 CU regressions; must scan for spinstall0.aspx and rotate keys.",
+      "rationale": "Skips all Sep 2025 CU regressions; must scan for spinstall0.aspx and rotate keys. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2025-07",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "ToolShell fully remediated by Aug CU and beyond.",
+      "rationale": "ToolShell fully remediated by Aug CU and beyond. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2025-08",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Clean path; no perm damage.",
+      "rationale": "Clean path; no perm damage. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2025-09",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Sep 2026 CU rolls up all Sep 2025 CU fixes incl. SPAdminV4 WS2025.",
+      "rationale": "Sep 2026 CU rolls up all Sep 2025 CU fixes incl. SPAdminV4 WS2025. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": [
         "Must run Fix-SeptemberCU-Permission-Problem.ps1 OR remove NT Authority\\system from WSS_WPG/IIS_IUSRS BEFORE installing — still called out in Sep 2026 CU post"
       ]
     },
     {
       "from": "2025-10",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "No blockers.",
+      "rationale": "No blockers. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2025-11",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "No blockers.",
+      "rationale": "No blockers. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2025-12",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Fixes 0xC0000409 / 0xC06D007E crashes — expedite.",
+      "rationale": "Fixes 0xC0000409 / 0xC06D007E crashes — expedite. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-01",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Apr 2026 CU onward contains the complete fix for I-16; Jan→Apr+ direct is safe. If following Stefan's documented workaround, route via Feb 2026 CU first.",
+      "rationale": "Apr 2026 CU onward contains the complete fix for I-16; Jan→Apr+ direct is safe. If following Stefan's documented workaround, route via Feb 2026 CU first. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": [
         "DO NOT install Mar 2026 CU on top of Jan 2026 CU DB schema"
       ]
     },
     {
       "from": "2026-02",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Clean.",
+      "rationale": "Clean. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-03-ok",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Mar installed from Feb base — clean.",
+      "rationale": "Mar installed from Feb base — clean. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-03-broken",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": true,
-      "rationale": "Farm already broken with SAFE_NOTIFICATION_DATA error — open MS Support ticket for engineering-guided remediation; do not self-repair schema.",
+      "rationale": "Farm already broken with SAFE_NOTIFICATION_DATA error — open MS Support ticket for engineering-guided remediation; do not self-repair schema. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": [
         "Upgrade wizard cannot complete until MS remediates"
       ]
     },
     {
       "from": "2026-04",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "No blockers.",
+      "rationale": "No blockers. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-05",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "No blockers.",
+      "rationale": "No blockers. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-06",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Direct; picks up Jul/Aug fixes. Still add web.config authorizedTypes (I-20) and pre-flight Sep behaviour changes. Stefan: farm hit by June regression can go straight to latest CU.",
+      "rationale": "Direct; picks up Jul/Aug fixes. Still add web.config authorizedTypes (I-20) and pre-flight Sep behaviour changes. Stefan: farm hit by June regression can go straight to latest CU. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-07",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Direct; Aug fixes I-28/I-29/I-31/I-21/I-22 included. Revert DisableActorTokenAudienceValidation (property removed).",
+      "rationale": "Direct; Aug fixes I-28/I-29/I-31/I-21/I-22 included. Revert DisableActorTokenAudienceValidation (property removed). [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": []
     },
     {
       "from": "2026-08",
-      "to": "2026-09",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Direct, but run Enable-SPLegacyWorkflow/Enable-SPWorkflow2013 and pre-seed allow-lists first. I-23 NOT fixed in Sep CU; I-24/I-25 are allow-list tasks.",
+      "rationale": "Direct, but run Enable-SPLegacyWorkflow/Enable-SPWorkflow2013 and pre-seed allow-lists first. I-23 NOT fixed in Sep CU; I-24/I-25 are allow-list tasks. [2026-10-21: path now ends at Oct 2026 CU; cumulative, no extra stop]",
       "blockers": [
         "No path forward on SharePoint 2016/2019 — Aug 2026 was the final CU for those versions; migrate to SPSE instead"
       ]
     },
     {
-      "from": "2026-09",
-      "to": "2026-10 (expected)",
+      "from": "2026-09 (incl. COD hotfix .20158)",
+      "to": "2026-10",
       "intermediate_required": false,
-      "rationale": "Optional KB5002927 first if InfoPath/SP2010 workflows in use. Oct CU disables SP2013 workflows by default (Enable-SPWorkflow2013 first); DCache fix targeted (unofficial); Nov CU blocks orphaned RERs.",
+      "rationale": "Direct. Re-check authorizedTypes, receivers; InfoPath settings still needed.",
       "blockers": []
     }
   ],
@@ -1486,11 +1601,12 @@
     "feature_26h1": "2026-06 (shipped inside June 2026 CU)",
     "oos_retirement": "2026-12-31",
     "fix_perm_script": "https://aka.ms/stefangossner/Fix-SeptemberCU-Permission-Problem.ps1",
-    "sep2026_hotfix": "KB5002927 (build 16.0.20326.20158)"
+    "sep2026_hotfix": "KB5002927 (build 16.0.20326.20158)",
+    "oct_2026_cu": "https://support.microsoft.com/en-us/kb/5002927"
   },
   "analysis_revision": {
-    "date": "2026-09-29",
-    "scope": "32 blog posts and 1,181 comments dated 2026-06-01..2026-09-28",
+    "date": "2026-10-21",
+    "scope": "37 blog posts and 1,465 comments dated 2026-06-01..2026-10-21 (incremental: 5 new posts, 168 comments dated >= 2026-09-30 read in full)",
     "method": "curl + WordPress REST API (no GitHub Actions)"
   },
   "deprecation_timeline": [
@@ -1507,12 +1623,12 @@
       "change": "SP2010 workflows, InfoPath Forms Services, ToolPane disabled by default; event-receiver assembly binding tightened"
     },
     {
-      "date": "2026-10 CU (expected)",
-      "change": "SP2013 workflows disabled by default"
+      "date": "2026-10 CU (released 2026-10-14)",
+      "change": "SP2013 workflow disablement did NOT ship (Stefan 2026-10-15); declarative rules validator (I-44); 26H2"
     },
     {
       "date": "2026-11 CU",
-      "change": "Orphaned RERs blocked"
+      "change": "Orphaned RERs blocked (webhooks flagged by Get-SPOrphanedRemoteEventReceiver); SP2013 workflow disablement possibly later, unannounced"
     },
     {
       "date": "future CU",
@@ -1530,5 +1646,37 @@
     "I-26 new RER registrations blocked since Aug 2026 CU",
     "I-27 publishing retraction (Stefan 2026-09-24)",
     "JSON now includes I-18 (was missing)"
-  ]
+  ],
+  "delta_2026-09-30": [
+    "I-35: App Catalog upload failure (SPCorporateCatalogEventReceiver v15) same root cause; Stefan endorses Update-EventReceiverVersionTo16.ps1 (v14 -> change $oldAssembly; DocumentManagement 15->16); third-party DLL registrations: vendor signature check, no fix if old Microsoft.SharePoint refs dropped",
+    "I-27: InfoPath still broken after KB5002927 -> enable CA 'Render form templates that are browser-enabled by users' (Stefan) and fix list form mappings (reader-confirmed)",
+    "I-19/I-27: 'feature temporarily disabled' persists for some despite Enable-SPLegacyWorkflow; SPD Delay workflows fail (unanswered)",
+    "IIS: SPRequestFilterModule association lost after PSConfig (2023 trending issue) — use blog fix, not manual edits",
+    "I-36: ToolPane disable is first step of defense-in-depth initiative; more default-off features expected; no known threat vector",
+    "I-42: Site activity web part Restore/Move (Aug CU), Office 2016 editing (Aug CU), modern upload failure (Sep CU) — unanswered",
+    "No new posts since 2026-09-21; recommendation unchanged (Sep 2026 CU / KB5002927 alt)"
+  ],
+  "corrections_2026-10-21": [
+    "KB5002927 is the Oct 2026 CU (build 16.0.20326.20190); the Sep COD hotfix (.20158) had no KB",
+    "Oct 2026 CU does NOT disable SP2013 workflows",
+    "I-23 DCache fix not confirmed in Oct CU (no statement)",
+    "I-35 subsite creation fixed in Oct CU code (Stefan 2026-10-15), untested by readers",
+    "Oct PU Critical CVE count regenerated: 14 (not 8 / not 2)"
+  ],
+  "delta_2026-10-21": {
+    "new_posts": [
+      "Oct 2026 SPSE CU",
+      "Oct 2026 PU summary",
+      "Feature Update 26H2",
+      "Oct 2026 SPWFM CU",
+      "Oct 2026 OOS CU"
+    ],
+    "new_issues": [
+      "I-44",
+      "I-45",
+      "I-46",
+      "I-47"
+    ],
+    "see_md": "5A.7"
+  }
 }
